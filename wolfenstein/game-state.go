@@ -76,6 +76,12 @@ func (gs *GameState) GetMapValue(x, y int) Cell {
     return gs.level[x+y*gs.mapSize]
 }
 
+func (gs *GameState) GetMapValueAt(x, y float64) Cell {
+    cellX := int(x / float64(gs.blockSize))
+    cellY := int(y / float64(gs.blockSize))
+    return gs.GetMapValue(cellX, cellY)
+}
+
 func (gs *GameState) GetLevel() []Cell {
     return gs.level
 }
@@ -97,17 +103,49 @@ func (gs *GameState) GetPlayerAngle() float64 {
 }
 
 func (gs *GameState) MoveUp() {
-    gs.player.Position.X += gs.player.Delta.X
-    gs.player.Position.Y += gs.player.Delta.Y
+    posX := gs.player.Position.X + gs.player.Delta.X
+    posY := gs.player.Position.Y + gs.player.Delta.Y
+
+    var xo, yo float64
+    const offset = 15
+
+    if gs.player.Delta.X > 0 {
+        xo = offset
+    } else {
+        xo = -offset
+    }
+
+    if gs.player.Delta.Y > 0 {
+        yo = offset
+    } else {
+        yo = -offset
+    }
+
+    // allow front wall sliding
+    if gs.GetMapValueAt(posX+xo, gs.player.Position.Y) == EmptyCell {
+        gs.player.Position.X = posX
+    }
+
+    if gs.GetMapValueAt(gs.player.Position.X, posY+yo) == EmptyCell {
+        gs.player.Position.Y = posY
+    }
 }
 
 func (gs *GameState) MoveDown() {
-    gs.player.Position.X -= gs.player.Delta.X
-    gs.player.Position.Y -= gs.player.Delta.Y
+    posX := gs.player.Position.X - gs.player.Delta.X
+    posY := gs.player.Position.Y - gs.player.Delta.Y
+
+    if gs.GetMapValueAt(posX, gs.player.Position.Y) == EmptyCell {
+        gs.player.Position.X = posX
+    }
+
+    if gs.GetMapValueAt(gs.player.Position.X, posY) == EmptyCell {
+        gs.player.Position.Y = posY
+    }
 }
 
 func (gs *GameState) MoveLeft() {
-    gs.player.Position.Angle -= 0.1
+    gs.player.Position.Angle -= 0.2
 
     if gs.player.Position.Angle < 0 {
         gs.player.Position.Angle += 2 * math.Pi
@@ -117,7 +155,7 @@ func (gs *GameState) MoveLeft() {
 }
 
 func (gs *GameState) MoveRight() {
-    gs.player.Position.Angle += 0.1
+    gs.player.Position.Angle += 0.2
 
     if gs.player.Position.Angle > 2*math.Pi {
         gs.player.Position.Angle -= 2 * math.Pi

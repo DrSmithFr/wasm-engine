@@ -51,7 +51,7 @@ func main() {
     width = float64(cvs.Width())
 
     // starting rendering
-    cvs.Start(30, Render)
+    cvs.Start(30, GameLoop)
 
     // allow daemon style process
     emptyChanToKeepAppRunning := make(chan bool)
@@ -143,7 +143,7 @@ func clickEvent(DOM browser.DOM, event js.Value) {
     go DOM.Log(fmt.Sprintf("mouseEvent x:%d y:%d", mouseX, mouseY))
 }
 
-func Render(gc *draw2dimg.GraphicContext) bool {
+func GameLoop(gc *draw2dimg.GraphicContext) bool {
     // render default color
     gc.SetFillColor(color.RGBA{0x18, 0x18, 0x18, 0xff})
     gc.Clear()
@@ -268,6 +268,7 @@ func renderGround(gc *draw2dimg.GraphicContext, viewOffset, screenWidth, screenH
 }
 
 func handleMove() {
+
     if keyboard.up {
         gs.MoveUp()
     } else if keyboard.down {
