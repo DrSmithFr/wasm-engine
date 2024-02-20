@@ -34,7 +34,7 @@ func (rt *RayTracer) ComputeRays() []Ray {
     oneRadian := 0.0174533
     rayAngle = gs.GetPlayerAngle()
 
-    const FieldOfViewsAngle = 60
+    const FieldOfViewsAngle = 90
     rayAngle -= oneRadian * FieldOfViewsAngle / 2
 
     if rayAngle < 0 {

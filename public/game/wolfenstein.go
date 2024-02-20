@@ -17,13 +17,14 @@ var cvs *browser.Canvas2d
 var gs *wolfenstein.GameState
 
 type move struct {
-    up    bool
-    down  bool
-    left  bool
-    right bool
+    up     bool
+    down   bool
+    left   bool
+    right  bool
+    action bool
 }
 
-var keyboard = move{false, false, false, false}
+var keyboard = move{false, false, false, false, false}
 
 var width float64
 var height float64
@@ -114,6 +115,8 @@ func keydownEvent(DOM browser.DOM, event js.Value) {
         keyboard.right = true
     case "ArrowLeft", "KeyA":
         keyboard.left = true
+    case "KeyE":
+        keyboard.action = true
     }
 
     //go DOM.Log(fmt.Sprintf("key down:%s", code))
@@ -131,6 +134,8 @@ func keyupEvent(DOM browser.DOM, event js.Value) {
         keyboard.right = false
     case "ArrowLeft", "KeyA":
         keyboard.left = false
+    case "KeyE":
+        keyboard.action = false
     }
 
     //go DOM.Log(fmt.Sprintf("key up:%s", code))
@@ -182,15 +187,16 @@ func renderRayCasting(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
 func render3D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
     const screenHeight = 480
     const viewOffset = 530
+    const lineWidth = 8
 
-    screenWidth := len(rays) * 8
+    screenWidth := len(rays) * lineWidth
 
     renderSky(gc, viewOffset, screenWidth, screenHeight)
     renderGround(gc, viewOffset, screenWidth, screenHeight)
 
     for rayN, ray := range rays {
         // render 3D walls
-        ca := gs.GetPlayerAngle() - ray.Origin.Angle
+        ca := ray.Origin.Angle - gs.GetPlayerAngle()
         if ca < 0 {
             ca += 2 * math.Pi
         }
@@ -211,14 +217,14 @@ func render3D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
         var c color.RGBA
 
         if ray.Impact.Type == wolfenstein.Horizontal {
-            c = color.RGBA{0xcc, 0x00, 0x00, 0xff}
+            c = color.RGBA{0xcc, 0xcc, 0xcc, 0xff}
         } else {
-            c = color.RGBA{0xff, 0x00, 0x00, 0xff}
+            c = color.RGBA{0xff, 0xff, 0xff, 0xff}
         }
 
-        if ray.Impact.CellType == wolfenstein.Other {
-            c.B = c.R
+        if ray.Impact.CellType == wolfenstein.Door {
             c.R = 0
+            c.G = 0
         }
 
         gc.SetFillColor(c)
@@ -226,9 +232,9 @@ func render3D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
 
         draw2dkit.Rectangle(
             gc,
-            float64(rayN*8+viewOffset),
+            float64(rayN*lineWidth+viewOffset),
             lineOffset,
-            float64(rayN*8+viewOffset)+8,
+            float64(rayN*lineWidth+viewOffset)+lineWidth,
             lineH+lineOffset,
         )
         gc.FillStroke()
@@ -269,6 +275,10 @@ func renderGround(gc *draw2dimg.GraphicContext, viewOffset, screenWidth, screenH
 
 func handleMove() {
 
+    if keyboard.action {
+        gs.Action()
+    }
+
     if keyboard.up {
         gs.MoveUp()
     } else if keyboard.down {
@@ -283,8 +293,6 @@ func handleMove() {
 }
 
 func renderLevel(gc *draw2dimg.GraphicContext) {
-    gc.SetFillColor(color.RGBA{0xff, 0xff, 0xff, 0xff})
-    gc.SetStrokeColor(color.RGBA{0xff, 0xff, 0xff, 0xff})
     gc.BeginPath()
 
     level := gs.GetLevel()
@@ -296,6 +304,14 @@ func renderLevel(gc *draw2dimg.GraphicContext) {
             if level[x+y*mapSize] == 0 {
                 // avoid useless rendering
                 continue
+            }
+
+            if level[x+y*mapSize] == wolfenstein.Door {
+                gc.SetFillColor(color.RGBA{0x00, 0x00, 0xff, 0xff})
+                gc.SetStrokeColor(color.RGBA{0x00, 0x00, 0xff, 0xff})
+            } else {
+                gc.SetFillColor(color.RGBA{0xff, 0xff, 0xff, 0xff})
+                gc.SetStrokeColor(color.RGBA{0xff, 0xff, 0xff, 0xff})
             }
 
             draw2dkit.Rectangle(

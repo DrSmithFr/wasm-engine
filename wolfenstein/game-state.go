@@ -9,7 +9,7 @@ type Cell int
 const (
     EmptyCell Cell = 0
     Wall           = 1
-    Other          = 2
+    Door           = 2
 )
 
 type GameState struct {
@@ -37,9 +37,9 @@ func NewGameState(width, height int) (*GameState, error) {
     // silly level
     gs.level = []Cell{
         1, 1, 1, 1, 1, 1, 1, 1,
-        1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 0, 1, 0, 1,
         1, 0, 1, 0, 0, 2, 0, 1,
-        1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 0, 1, 2, 1,
         1, 0, 0, 0, 0, 0, 0, 1,
         1, 0, 0, 0, 0, 1, 0, 1,
         1, 0, 0, 0, 0, 0, 0, 1,
@@ -80,6 +80,16 @@ func (gs *GameState) GetMapValueAt(x, y float64) Cell {
     cellX := int(x / float64(gs.blockSize))
     cellY := int(y / float64(gs.blockSize))
     return gs.GetMapValue(cellX, cellY)
+}
+
+func (gs *GameState) SetMapValue(x, y int, cell Cell) {
+    gs.level[x+y*gs.mapSize] = cell
+}
+
+func (gs *GameState) SetMapValueAt(x, y float64, cell Cell) {
+    cellX := int(x / float64(gs.blockSize))
+    cellY := int(y / float64(gs.blockSize))
+    gs.SetMapValue(cellX, cellY, cell)
 }
 
 func (gs *GameState) GetLevel() []Cell {
@@ -167,4 +177,33 @@ func (gs *GameState) MoveRight() {
 func (gs *GameState) updateDelta() {
     gs.player.Delta.X = math.Cos(gs.player.Position.Angle) * 5
     gs.player.Delta.Y = math.Sin(gs.player.Position.Angle) * 5
+}
+
+func (gs *GameState) Action() {
+    posX := gs.player.Position.X + gs.player.Delta.X
+    posY := gs.player.Position.Y + gs.player.Delta.Y
+
+    var xo, yo float64
+    const offset = 20
+
+    if gs.player.Delta.X > 0 {
+        xo = offset
+    } else {
+        xo = -offset
+    }
+
+    if gs.player.Delta.Y > 0 {
+        yo = offset
+    } else {
+        yo = -offset
+    }
+
+    // allow side door opening
+    if gs.GetMapValueAt(posX+xo, gs.player.Position.Y) == Door {
+        gs.SetMapValueAt(posX+xo, gs.player.Position.Y, EmptyCell)
+    }
+
+    if gs.GetMapValueAt(gs.player.Position.X, posY+yo) == Door {
+        gs.SetMapValueAt(gs.player.Position.X, posY+yo, EmptyCell)
+    }
 }
