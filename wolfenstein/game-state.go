@@ -4,16 +4,8 @@ import (
     "math"
 )
 
-type Cell int
-
-const (
-    EmptyCell Cell = 0
-    Wall           = 1
-    Door           = 2
-)
-
 type GameState struct {
-    level     []Cell
+    level     Map
     mapSize   int
     blockSize int
 
@@ -35,16 +27,7 @@ func NewGameState(width, height int) (*GameState, error) {
     var gs GameState
 
     // silly level
-    gs.level = []Cell{
-        1, 1, 1, 1, 1, 1, 1, 1,
-        1, 0, 1, 0, 0, 1, 0, 1,
-        1, 0, 1, 0, 0, 2, 0, 1,
-        1, 0, 1, 0, 0, 1, 2, 1,
-        1, 0, 0, 0, 0, 0, 0, 1,
-        1, 0, 0, 0, 0, 1, 0, 1,
-        1, 0, 0, 0, 0, 0, 0, 1,
-        1, 1, 1, 1, 1, 1, 1, 1,
-    }
+    gs.level = Level0
 
     gs.mapSize = 8
     gs.blockSize = 64
@@ -69,11 +52,11 @@ func (gs *GameState) GetMapSize() int {
 func (gs *GameState) GetMapValue(x, y int) Cell {
     index := x + y*gs.mapSize
 
-    if index < 0 || index >= len(gs.level) {
+    if index < 0 || index >= len(gs.level.Walls) {
         return 0
     }
 
-    return gs.level[x+y*gs.mapSize]
+    return gs.level.Walls[x+y*gs.mapSize]
 }
 
 func (gs *GameState) GetMapValueAt(x, y float64) Cell {
@@ -83,7 +66,7 @@ func (gs *GameState) GetMapValueAt(x, y float64) Cell {
 }
 
 func (gs *GameState) SetMapValue(x, y int, cell Cell) {
-    gs.level[x+y*gs.mapSize] = cell
+    gs.level.Walls[x+y*gs.mapSize] = cell
 }
 
 func (gs *GameState) SetMapValueAt(x, y float64, cell Cell) {
@@ -92,7 +75,7 @@ func (gs *GameState) SetMapValueAt(x, y float64, cell Cell) {
     gs.SetMapValue(cellX, cellY, cell)
 }
 
-func (gs *GameState) GetLevel() []Cell {
+func (gs *GameState) GetLevel() Map {
     return gs.level
 }
 
@@ -199,11 +182,11 @@ func (gs *GameState) Action() {
     }
 
     // allow side door opening
-    if gs.GetMapValueAt(posX+xo, gs.player.Position.Y) == Door {
+    if gs.GetMapValueAt(posX+xo, gs.player.Position.Y) == Window {
         gs.SetMapValueAt(posX+xo, gs.player.Position.Y, EmptyCell)
     }
 
-    if gs.GetMapValueAt(gs.player.Position.X, posY+yo) == Door {
+    if gs.GetMapValueAt(gs.player.Position.X, posY+yo) == Window {
         gs.SetMapValueAt(gs.player.Position.X, posY+yo, EmptyCell)
     }
 }

@@ -84,8 +84,8 @@ func (rt *RayTracer) ComputeRays() []Ray {
             mapIndex = mapY*mapSize + mapX
 
             // hit wall
-            if mapIndex > 0 && mapIndex < mapSize*mapSize && level[mapIndex] > EmptyCell {
-                TargetTypeH = level[mapIndex]
+            if mapIndex > 0 && mapIndex < mapSize*mapSize && level.Walls[mapIndex] > EmptyCell {
+                TargetTypeH = level.Walls[mapIndex]
                 dof = maxDepth
                 hx = rayX
                 hy = rayY
@@ -137,8 +137,8 @@ func (rt *RayTracer) ComputeRays() []Ray {
             mapIndex = mapY*mapSize + mapX
 
             // hit wall
-            if mapIndex > 0 && mapIndex < mapSize*mapSize && level[mapIndex] > EmptyCell {
-                TargetTypeV = level[mapIndex]
+            if mapIndex > 0 && mapIndex < mapSize*mapSize && level.Walls[mapIndex] > EmptyCell {
+                TargetTypeV = level.Walls[mapIndex]
                 vx = rayX
                 vy = rayY
                 distV = dist(playerX, playerY, vx, vy, rayAngle)
