@@ -24,6 +24,7 @@ func (rt *RayTracer) ComputeRays() []*Ray {
     var mapX, mapY, mapIndex int
     var dof int
     var distT float64
+    var TargetTypeT Cell
 
     level := gs.GetLevel()
     blocSize := gs.GetBlockSize()
@@ -33,6 +34,9 @@ func (rt *RayTracer) ComputeRays() []*Ray {
     oneRadian := 0.0174533
     rayAngle = gs.GetPlayerAngle()
 
+    const FieldOfViewsAngle = 60
+    rayAngle -= oneRadian * FieldOfViewsAngle / 2
+
     if rayAngle < 0 {
         rayAngle += 2 * math.Pi
     } else if rayAngle > 2*math.Pi {
@@ -41,12 +45,13 @@ func (rt *RayTracer) ComputeRays() []*Ray {
 
     var rays []*Ray
 
-    for rayN := 0; rayN < 30; rayN++ {
+    for rayN := 0; rayN <= FieldOfViewsAngle; rayN++ {
         // check Horizontal
         dof = 0
         aTan := -1 / math.Tan(rayAngle)
 
         distH := 1000000.0
+        TargetTypeH := EmptyCell
         hx := playerX
         hy := playerY
 
@@ -79,7 +84,8 @@ func (rt *RayTracer) ComputeRays() []*Ray {
             mapIndex = mapY*mapSize + mapX
 
             // hit wall
-            if mapIndex > 0 && mapIndex < mapSize*mapSize && level[mapIndex] == 1 {
+            if mapIndex > 0 && mapIndex < mapSize*mapSize && level[mapIndex] > EmptyCell {
+                TargetTypeH = level[mapIndex]
                 dof = maxDepth
                 hx = rayX
                 hy = rayY
@@ -98,6 +104,7 @@ func (rt *RayTracer) ComputeRays() []*Ray {
         P3 := 3 * P2
 
         distV := 1000000.0
+        TargetTypeV := EmptyCell
         vx := playerX
         vy := playerY
 
@@ -130,7 +137,8 @@ func (rt *RayTracer) ComputeRays() []*Ray {
             mapIndex = mapY*mapSize + mapX
 
             // hit wall
-            if mapIndex > 0 && mapIndex < mapSize*mapSize && level[mapIndex] == 1 {
+            if mapIndex > 0 && mapIndex < mapSize*mapSize && level[mapIndex] > EmptyCell {
+                TargetTypeV = level[mapIndex]
                 vx = rayX
                 vy = rayY
                 distV = dist(playerX, playerY, vx, vy, rayAngle)
@@ -141,11 +149,16 @@ func (rt *RayTracer) ComputeRays() []*Ray {
                 dof++
             }
         }
+
+        var impactType ImpactType
+
         // vertical wall
         if distV < distH {
             rayX = vx
             rayY = vy
             distT = distV
+            TargetTypeT = TargetTypeV
+            impactType = Vertical
         }
 
         // horizontal wall
@@ -153,6 +166,8 @@ func (rt *RayTracer) ComputeRays() []*Ray {
             rayX = hx
             rayY = hy
             distT = distH
+            TargetTypeT = TargetTypeH
+            impactType = Horizontal
         }
 
         ray := &Ray{
@@ -162,8 +177,12 @@ func (rt *RayTracer) ComputeRays() []*Ray {
                 Angle: rayAngle,
             },
             Impact: Impact{
-                X: rayX,
-                Y: rayY,
+                X:        rayX,
+                Y:        rayY,
+                CellX:    mapX,
+                CellY:    mapY,
+                CellType: TargetTypeT,
+                Type:     impactType,
             },
             Distance: distT,
         }
@@ -194,7 +213,24 @@ func (rt *RayTracer) DrawRay(
     drawLine(gc, ray.Origin.X, ray.Origin.Y, ray.Impact.X, ray.Impact.Y)
     drawPoint(gc, ray.Origin.X, ray.Origin.Y, 5)
 
-    //drawCellHighlight(gc, ray.cellX, ray.cellY, gs.blockSize)
+    rt.drawCellHighlight(gc, ray.Impact.CellX, ray.Impact.CellY, color)
+}
+
+func (rt *RayTracer) drawCellHighlight(gc *draw2dimg.GraphicContext, x int, y int, rgba color.RGBA) {
+    blockSize := rt.gameState.GetBlockSize()
+
+    gc.SetFillColor(rgba)
+    gc.SetStrokeColor(rgba)
+
+    draw2dkit.Rectangle(
+        gc,
+        float64(x*blockSize),
+        float64(y*blockSize),
+        float64(x*blockSize+blockSize),
+        float64(y*blockSize+blockSize),
+    )
+    gc.FillStroke()
+
 }
 
 func dist(aX, aY, bX, bY, angle float64) float64 {

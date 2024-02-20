@@ -180,7 +180,7 @@ func renderRayCasting(gc *draw2dimg.GraphicContext, rays []*wolfenstein.Ray) {
 }
 
 func render3D(gc *draw2dimg.GraphicContext, rays []*wolfenstein.Ray) {
-    const lineHeight = 320
+    const lineHeight = 480
     const viewOffset = 530
 
     for rayN, ray := range rays {
@@ -202,6 +202,22 @@ func render3D(gc *draw2dimg.GraphicContext, rays []*wolfenstein.Ray) {
         }
 
         lineOffset := (lineHeight / 2) - lineH/2
+
+        var c color.RGBA
+
+        if ray.Impact.Type == wolfenstein.Horizontal {
+            c = color.RGBA{0xcc, 0x00, 0x00, 0xff}
+        } else {
+            c = color.RGBA{0xff, 0x00, 0x00, 0xff}
+        }
+
+        if ray.Impact.CellType == wolfenstein.Other {
+            c.B = c.R
+            c.R = 0
+        }
+
+        gc.SetFillColor(c)
+        gc.SetStrokeColor(c)
 
         draw2dkit.Rectangle(
             gc,

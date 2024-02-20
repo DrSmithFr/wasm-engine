@@ -4,8 +4,16 @@ import (
     "math"
 )
 
+type Cell int
+
+const (
+    EmptyCell Cell = 0
+    Wall           = 1
+    Other          = 2
+)
+
 type GameState struct {
-    level     []int
+    level     []Cell
     mapSize   int
     blockSize int
 
@@ -27,10 +35,10 @@ func NewGameState(width, height int) (*GameState, error) {
     var gs GameState
 
     // silly level
-    gs.level = []int{
+    gs.level = []Cell{
         1, 1, 1, 1, 1, 1, 1, 1,
         1, 0, 1, 0, 0, 0, 0, 1,
-        1, 0, 1, 0, 0, 0, 0, 1,
+        1, 0, 1, 0, 0, 2, 0, 1,
         1, 0, 1, 0, 0, 0, 0, 1,
         1, 0, 0, 0, 0, 0, 0, 1,
         1, 0, 0, 0, 0, 1, 0, 1,
@@ -58,7 +66,7 @@ func NewGameState(width, height int) (*GameState, error) {
 func (gs *GameState) GetMapSize() int {
     return gs.mapSize
 }
-func (gs *GameState) GetMapValue(x, y int) int {
+func (gs *GameState) GetMapValue(x, y int) Cell {
     index := x + y*gs.mapSize
 
     if index < 0 || index >= len(gs.level) {
@@ -68,7 +76,7 @@ func (gs *GameState) GetMapValue(x, y int) int {
     return gs.level[x+y*gs.mapSize]
 }
 
-func (gs *GameState) GetLevel() []int {
+func (gs *GameState) GetLevel() []Cell {
     return gs.level
 }
 
