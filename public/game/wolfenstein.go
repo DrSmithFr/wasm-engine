@@ -222,9 +222,18 @@ func render3D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
             c = color.RGBA{0xff, 0xff, 0xff, 0xff}
         }
 
-        if ray.Impact.CellType == wolfenstein.Window {
+        if ray.Impact.CellType == wolfenstein.Door {
             c.R = 0
             c.G = 0
+        }
+
+        if ray.Impact.CellType == wolfenstein.Window {
+            c.R = 0
+        }
+
+        if ray.Impact.CellType == wolfenstein.Checkerboard {
+            c.R = 0
+            c.B = 0
         }
 
         gc.SetFillColor(c)
@@ -306,13 +315,24 @@ func renderLevel(gc *draw2dimg.GraphicContext) {
                 continue
             }
 
-            if level.Walls[x+y*mapSize] == wolfenstein.Window {
-                gc.SetFillColor(color.RGBA{0x00, 0x00, 0xff, 0xff})
-                gc.SetStrokeColor(color.RGBA{0x00, 0x00, 0xff, 0xff})
-            } else {
-                gc.SetFillColor(color.RGBA{0xff, 0xff, 0xff, 0xff})
-                gc.SetStrokeColor(color.RGBA{0xff, 0xff, 0xff, 0xff})
+            c := color.RGBA{0xff, 0xff, 0xff, 0xff}
+
+            if level.Walls[x+y*mapSize] == wolfenstein.Door {
+                c.R = 0
+                c.G = 0
             }
+
+            if level.Walls[x+y*mapSize] == wolfenstein.Window {
+                c.R = 0
+            }
+
+            if level.Walls[x+y*mapSize] == wolfenstein.Checkerboard {
+                c.R = 0
+                c.B = 0
+            }
+
+            gc.SetFillColor(c)
+            gc.SetStrokeColor(c)
 
             draw2dkit.Rectangle(
                 gc,

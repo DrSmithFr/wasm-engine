@@ -182,11 +182,11 @@ func (gs *GameState) Action() {
     }
 
     // allow side door opening
-    if gs.GetMapValueAt(posX+xo, gs.player.Position.Y) == Window {
+    if gs.GetMapValueAt(posX+xo, gs.player.Position.Y) == Door {
         gs.SetMapValueAt(posX+xo, gs.player.Position.Y, EmptyCell)
     }
 
-    if gs.GetMapValueAt(gs.player.Position.X, posY+yo) == Window {
+    if gs.GetMapValueAt(gs.player.Position.X, posY+yo) == Door {
         gs.SetMapValueAt(gs.player.Position.X, posY+yo, EmptyCell)
     }
 }
