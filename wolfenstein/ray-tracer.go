@@ -15,7 +15,7 @@ func NewRayTracer(gs *GameState) *RayTracer {
     return &RayTracer{gs}
 }
 
-func (rt *RayTracer) ComputeRays() []*Ray {
+func (rt *RayTracer) ComputeRays() []Ray {
     const maxDepth = 8
     gs := rt.gameState
 
@@ -43,7 +43,7 @@ func (rt *RayTracer) ComputeRays() []*Ray {
         rayAngle -= 2 * math.Pi
     }
 
-    var rays []*Ray
+    var rays []Ray
 
     for rayN := 0; rayN <= FieldOfViewsAngle; rayN++ {
         // check Horizontal
@@ -170,7 +170,7 @@ func (rt *RayTracer) ComputeRays() []*Ray {
             impactType = Horizontal
         }
 
-        ray := &Ray{
+        ray := Ray{
             Origin: Point{
                 X:     playerX,
                 Y:     playerY,

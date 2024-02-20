@@ -159,13 +159,13 @@ func Render(gc *draw2dimg.GraphicContext) bool {
     return true
 }
 
-func render2D(gc *draw2dimg.GraphicContext, rays []*wolfenstein.Ray) {
+func render2D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
     renderLevel(gc)
     renderRayCasting(gc, rays)
     renderPlayer(gc)
 }
 
-func renderRayCasting(gc *draw2dimg.GraphicContext, rays []*wolfenstein.Ray) {
+func renderRayCasting(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
     gc.SetFillColor(color.RGBA{0xff, 0x00, 0x00, 0xff})
     gc.SetStrokeColor(color.RGBA{0xff, 0x00, 0x00, 0xff})
 
@@ -179,9 +179,14 @@ func renderRayCasting(gc *draw2dimg.GraphicContext, rays []*wolfenstein.Ray) {
     }
 }
 
-func render3D(gc *draw2dimg.GraphicContext, rays []*wolfenstein.Ray) {
-    const lineHeight = 480
+func render3D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
+    const screenHeight = 480
     const viewOffset = 530
+
+    screenWidth := len(rays) * 8
+
+    renderSky(gc, viewOffset, screenWidth, screenHeight)
+    renderGround(gc, viewOffset, screenWidth, screenHeight)
 
     for rayN, ray := range rays {
         // render 3D walls
@@ -196,12 +201,12 @@ func render3D(gc *draw2dimg.GraphicContext, rays []*wolfenstein.Ray) {
         // fix fisheye
         distT := ray.Distance * math.Cos(ca)
 
-        lineH := float64(gs.GetMapSize()*lineHeight) / distT
-        if lineH > lineHeight {
-            lineH = lineHeight
+        lineH := float64(gs.GetMapSize()*screenHeight) / distT * 3
+        if lineH > screenHeight {
+            lineH = screenHeight
         }
 
-        lineOffset := (lineHeight / 2) - lineH/2
+        lineOffset := (screenHeight / 2) - lineH/2
 
         var c color.RGBA
 
@@ -228,6 +233,38 @@ func render3D(gc *draw2dimg.GraphicContext, rays []*wolfenstein.Ray) {
         )
         gc.FillStroke()
     }
+}
+
+func renderSky(gc *draw2dimg.GraphicContext, viewOffset, screenWidth, screenHeight int) {
+    skyColor := color.RGBA{0x00, 0x00, 0x99, 0xff}
+
+    gc.SetFillColor(skyColor)
+    gc.SetStrokeColor(skyColor)
+
+    draw2dkit.Rectangle(
+        gc,
+        float64(viewOffset),
+        0,
+        float64(viewOffset+screenWidth),
+        float64(screenHeight/2),
+    )
+    gc.FillStroke()
+}
+
+func renderGround(gc *draw2dimg.GraphicContext, viewOffset, screenWidth, screenHeight int) {
+    groundColor := color.RGBA{0x00, 0x99, 0x99, 0xff}
+
+    gc.SetFillColor(groundColor)
+    gc.SetStrokeColor(groundColor)
+
+    draw2dkit.Rectangle(
+        gc,
+        float64(viewOffset),
+        float64(screenHeight/2),
+        float64(viewOffset+screenWidth),
+        float64(screenHeight),
+    )
+    gc.FillStroke()
 }
 
 func handleMove() {
