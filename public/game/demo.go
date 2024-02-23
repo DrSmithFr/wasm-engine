@@ -309,9 +309,9 @@ func handleMove() {
     }
 
     if keyboard.right {
-        gs.MoveRight()
+        gs.TurnRight()
     } else if keyboard.left {
-        gs.MoveLeft()
+        gs.TurnLeft()
     }
 }
 

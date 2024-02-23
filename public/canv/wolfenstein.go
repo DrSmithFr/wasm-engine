@@ -199,14 +199,8 @@ func renderGameView(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
     renderGround(gc, screenWidth, screenHeight, up)
 
     for rayN, ray := range rays {
-        // render 3D walls
-        ca := ray.Origin.Angle - gs.GetPlayerAngle()
-        if ca < 0 {
-            ca += 2 * math.Pi
-        }
-        if ca > 2*math.Pi {
-            ca -= 2 * math.Pi
-        }
+        angle := wolfenstein.FixAngle(ray.Origin.Angle + 30 - rayN*60/len(rays))
+        ca := wolfenstein.DegToRad(float64(angle))
 
         // fix fisheye
         distT := ray.Distance * math.Cos(ca)
@@ -299,9 +293,9 @@ func handleMove() {
     }
 
     if keyboard.right {
-        gs.MoveRight()
+        gs.TurnRight()
     } else if keyboard.left {
-        gs.MoveLeft()
+        gs.TurnLeft()
     }
 }
 

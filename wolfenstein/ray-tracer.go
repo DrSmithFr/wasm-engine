@@ -15,55 +15,64 @@ func NewRayTracer(gs *GameState) *RayTracer {
     return &RayTracer{gs}
 }
 
+func DegToRad(deg float64) float64 {
+    return deg * (math.Pi / 180.)
+}
+
+func FixAngle(angle int) int {
+    if angle > 359 {
+        return angle - 360
+    }
+
+    if angle < 0 {
+        return angle + 360
+    }
+
+    return angle
+}
+
 func (rt *RayTracer) ComputeRays() []Ray {
-    const precision = 2
     const maxDepth = 8
+
     gs := rt.gameState
 
-    var rayX, rayY, rayAngle float64
+    var rayAngle int
+    var rayX, rayY float64
     var rayTargetX, rayTargetY float64
-    var mapX, mapY, mapIndex int
+    var mapX, mapY int
     var dof int
     var distT float64
     var TargetTypeT Cell
 
-    level := gs.GetLevel()
     blocSize := gs.GetBlockSize()
-    mapSize := gs.GetMapSize()
     playerX, playerY, _, _ := gs.GetPlayerPosition()
 
-    oneRadian := 0.0174533 / precision
-    rayAngle = gs.GetPlayerAngle()
-
-    const FieldOfViewsAngle = 60 * precision
-    rayAngle -= oneRadian * FieldOfViewsAngle / 2
-
-    if rayAngle < 0 {
-        rayAngle += 2 * math.Pi
-    } else if rayAngle > 2*math.Pi {
-        rayAngle -= 2 * math.Pi
-    }
+    const FieldOfViewsAngle = 60
+    startAngle := FixAngle(gs.GetPlayer().Position.Angle - 30)
 
     var rays []Ray
 
     for rayN := 0; rayN <= FieldOfViewsAngle; rayN++ {
+        rayAngleDeg := FixAngle(startAngle + rayAngle)
+        rayAngleRad := DegToRad(float64(rayAngleDeg))
+
         // check Horizontal
         dof = 0
-        aTan := -1 / math.Tan(rayAngle)
+        aTan := -1 / math.Tan(rayAngleRad)
 
         distH := 1000000.0
         TargetTypeH := EmptyCell
         hx := playerX
         hy := playerY
 
-        if rayAngle > math.Pi {
+        if rayAngleDeg > 180 {
             // looking up
             rayY = math.Trunc(playerY/float64(blocSize))*float64(blocSize) - 1
             rayX = (playerY-rayY)*aTan + playerX
 
             rayTargetY = -float64(blocSize)
             rayTargetX = -rayTargetY * aTan
-        } else if rayAngle < math.Pi {
+        } else if rayAngleDeg < 180 {
             // looking down
             rayY = math.Trunc(playerY/float64(blocSize))*float64(blocSize) + float64(blocSize)
             rayX = (playerY-rayY)*aTan + playerX
@@ -72,25 +81,22 @@ func (rt *RayTracer) ComputeRays() []Ray {
             rayTargetX = -rayTargetY * aTan
         }
 
-        if rayAngle == 0 || rayAngle == math.Pi {
+        if rayAngleDeg == 0 || rayAngleDeg == 180 {
             rayX = playerX
             rayY = playerY
             dof = maxDepth
         }
 
         for ; dof < maxDepth; {
-            mapX = int(math.Trunc(rayX / float64(blocSize)))
-            mapY = int(math.Trunc((rayY) / float64(blocSize)))
-
-            mapIndex = mapY*mapSize + mapX
+            cell := gs.GetMapValueAt(rayX, rayY)
 
             // hit wall
-            if mapIndex > 0 && mapIndex < mapSize*mapSize && level.Walls[mapIndex] > EmptyCell {
-                TargetTypeH = level.Walls[mapIndex]
+            if cell > EmptyCell {
+                TargetTypeH = cell
                 dof = maxDepth
                 hx = rayX
                 hy = rayY
-                distH = dist(playerX, playerY, hx, hy, rayAngle)
+                distH = dist(playerX, playerY, hx, hy, rayAngleRad)
             } else {
                 rayX += rayTargetX
                 rayY += rayTargetY
@@ -100,23 +106,21 @@ func (rt *RayTracer) ComputeRays() []Ray {
 
         // check Vertical
         dof = 0
-        nTan := -math.Tan(rayAngle)
-        P2 := math.Pi / 2
-        P3 := 3 * P2
+        nTan := -math.Tan(rayAngleRad)
 
         distV := 1000000.0
         TargetTypeV := EmptyCell
         vx := playerX
         vy := playerY
 
-        if rayAngle > P2 && rayAngle < P3 {
+        if rayAngleDeg > 90 && rayAngleDeg < 270 {
             // looking left
             rayX = math.Trunc(playerX/float64(blocSize))*float64(blocSize) - 1
             rayY = (playerX-rayX)*nTan + playerY
 
             rayTargetX = -float64(blocSize)
             rayTargetY = -rayTargetX * nTan
-        } else if rayAngle < P2 || rayAngle > P3 {
+        } else if rayAngleRad < 90 || rayAngleRad > 270 {
             // looking right
             rayX = math.Trunc(playerX/float64(blocSize))*float64(blocSize) + float64(blocSize)
             rayY = (playerX-rayX)*nTan + playerY
@@ -125,24 +129,21 @@ func (rt *RayTracer) ComputeRays() []Ray {
             rayTargetY = -rayTargetX * nTan
         }
 
-        if rayAngle == 0 || rayAngle == math.Pi {
+        if rayAngleDeg == 0 || rayAngleDeg == 180 {
             rayX = playerX
             rayY = playerY
             dof = maxDepth
         }
 
         for ; dof < maxDepth; {
-            mapX = int(math.Trunc(rayX / float64(blocSize)))
-            mapY = int(math.Trunc((rayY) / float64(blocSize)))
-
-            mapIndex = mapY*mapSize + mapX
+            cell := gs.GetMapValueAt(rayX, rayY)
 
             // hit wall
-            if mapIndex > 0 && mapIndex < mapSize*mapSize && level.Walls[mapIndex] > EmptyCell {
-                TargetTypeV = level.Walls[mapIndex]
+            if cell > EmptyCell {
+                TargetTypeV = cell
                 vx = rayX
                 vy = rayY
-                distV = dist(playerX, playerY, vx, vy, rayAngle)
+                distV = dist(playerX, playerY, vx, vy, rayAngleRad)
                 dof = maxDepth
             } else {
                 rayX += rayTargetX
@@ -189,15 +190,7 @@ func (rt *RayTracer) ComputeRays() []Ray {
         }
 
         rays = append(rays, ray)
-
-        // updating Angle for next ray
-        rayAngle += oneRadian
-
-        if rayAngle < 0 {
-            rayAngle += 2 * math.Pi
-        } else if rayAngle > 2*math.Pi {
-            rayAngle -= 2 * math.Pi
-        }
+        rayAngle++
     }
 
     return rays

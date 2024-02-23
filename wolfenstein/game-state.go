@@ -20,7 +20,11 @@ type Player struct {
 type Point struct {
     X     float64
     Y     float64
-    Angle float64
+    Angle int
+}
+
+func (p Point) Rad() float64 {
+    return float64(p.Angle) * (math.Pi / 180.)
 }
 
 func NewGameState(width, height int) (*GameState, error) {
@@ -34,9 +38,9 @@ func NewGameState(width, height int) (*GameState, error) {
 
     gs.player = Player{
         Position: Point{
-            float64(gs.mapSize * gs.blockSize / 2),
-            float64(gs.mapSize * gs.blockSize / 2),
-            0.0,
+            float64(gs.mapSize*gs.blockSize/2) + 10,
+            float64(gs.mapSize*gs.blockSize/2) + 10,
+            0,
         },
         Delta: Point{0, 0, 0.0},
     }
@@ -60,8 +64,8 @@ func (gs *GameState) GetMapValue(x, y int) Cell {
 }
 
 func (gs *GameState) GetMapValueAt(x, y float64) Cell {
-    cellX := int(x / float64(gs.blockSize))
-    cellY := int(y / float64(gs.blockSize))
+    cellX := int(math.Trunc(x / float64(gs.blockSize)))
+    cellY := int(math.Trunc(y / float64(gs.blockSize)))
     return gs.GetMapValue(cellX, cellY)
 }
 
@@ -89,10 +93,6 @@ func (gs *GameState) GetPlayerPosition() (x, y, deltaX, deltaY float64) {
 
 func (gs *GameState) GetBlockSize() int {
     return gs.blockSize
-}
-
-func (gs *GameState) GetPlayerAngle() float64 {
-    return gs.player.Position.Angle
 }
 
 func (gs *GameState) MoveUp() {
@@ -137,29 +137,21 @@ func (gs *GameState) MoveDown() {
     }
 }
 
-func (gs *GameState) MoveLeft() {
-    gs.player.Position.Angle -= 0.2
+const AngularMomentum = 5
 
-    if gs.player.Position.Angle < 0 {
-        gs.player.Position.Angle += 2 * math.Pi
-    }
-
+func (gs *GameState) TurnLeft() {
+    gs.player.Position.Angle = FixAngle(gs.player.Position.Angle - AngularMomentum)
     gs.updateDelta()
 }
 
-func (gs *GameState) MoveRight() {
-    gs.player.Position.Angle += 0.2
-
-    if gs.player.Position.Angle > 2*math.Pi {
-        gs.player.Position.Angle -= 2 * math.Pi
-    }
-
+func (gs *GameState) TurnRight() {
+    gs.player.Position.Angle = FixAngle(gs.player.Position.Angle + AngularMomentum)
     gs.updateDelta()
 }
 
 func (gs *GameState) updateDelta() {
-    gs.player.Delta.X = math.Cos(gs.player.Position.Angle) * 5
-    gs.player.Delta.Y = math.Sin(gs.player.Position.Angle) * 5
+    gs.player.Delta.X = math.Cos(gs.player.Position.Rad()) * 5
+    gs.player.Delta.Y = math.Sin(gs.player.Position.Rad()) * 5
 }
 
 func (gs *GameState) Action() {
