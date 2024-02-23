@@ -156,15 +156,15 @@ func GameLoop(gc *draw2dimg.GraphicContext) bool {
     rt := wolfenstein.NewRayTracer(gs)
     rays := rt.ComputeRays()
 
-    render2D(gc, rays)
-    render3D(gc, rays)
+    renderGameView(gc, rays)
+    renderMiniMap(gc, rays)
 
     handleMove()
 
     return true
 }
 
-func render2D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
+func renderMiniMap(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
     renderLevel(gc)
     renderRayCasting(gc, rays)
     renderPlayer(gc)
@@ -184,15 +184,19 @@ func renderRayCasting(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
     }
 }
 
-func render3D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
-    const screenHeight = 480
-    const viewOffset = 530
+func renderGameView(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
+    const screenHeight = 320
     const lineWidth = 8
 
     screenWidth := len(rays) * lineWidth
 
-    renderSky(gc, viewOffset, screenWidth, screenHeight)
-    renderGround(gc, viewOffset, screenWidth, screenHeight)
+    up := &wolfenstein.Upscale{
+        Source: wolfenstein.Resolution{screenWidth, screenHeight},
+        Target: wolfenstein.Resolution{int(width), int(height)},
+    }
+
+    renderSky(gc, screenWidth, screenHeight, up)
+    renderGround(gc, screenWidth, screenHeight, up)
 
     for rayN, ray := range rays {
         // render 3D walls
@@ -207,7 +211,7 @@ func render3D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
         // fix fisheye
         distT := ray.Distance * math.Cos(ca)
 
-        lineH := float64(gs.GetMapSize()*screenHeight) / distT * 3
+        lineH := float64(gs.GetMapSize()*screenHeight) / distT
         if lineH > screenHeight {
             lineH = screenHeight
         }
@@ -241,16 +245,16 @@ func render3D(gc *draw2dimg.GraphicContext, rays []wolfenstein.Ray) {
 
         draw2dkit.Rectangle(
             gc,
-            float64(rayN*lineWidth+viewOffset),
-            lineOffset,
-            float64(rayN*lineWidth+viewOffset)+lineWidth,
-            lineH+lineOffset,
+            up.ScaleWidth(float64(rayN*lineWidth)),
+            up.ScaleHeight(lineOffset),
+            up.ScaleWidth(float64(rayN*lineWidth)+lineWidth),
+            up.ScaleHeight(lineH+lineOffset),
         )
         gc.FillStroke()
     }
 }
 
-func renderSky(gc *draw2dimg.GraphicContext, viewOffset, screenWidth, screenHeight int) {
+func renderSky(gc *draw2dimg.GraphicContext, screenWidth, screenHeight int, up *wolfenstein.Upscale) {
     skyColor := color.RGBA{0x00, 0x00, 0x99, 0xff}
 
     gc.SetFillColor(skyColor)
@@ -258,15 +262,15 @@ func renderSky(gc *draw2dimg.GraphicContext, viewOffset, screenWidth, screenHeig
 
     draw2dkit.Rectangle(
         gc,
-        float64(viewOffset),
         0,
-        float64(viewOffset+screenWidth),
-        float64(screenHeight/2),
+        0,
+        up.ScaleWidth(float64(screenWidth)),
+        up.ScaleHeight(float64(screenHeight/2)),
     )
     gc.FillStroke()
 }
 
-func renderGround(gc *draw2dimg.GraphicContext, viewOffset, screenWidth, screenHeight int) {
+func renderGround(gc *draw2dimg.GraphicContext, screenWidth, screenHeight int, up *wolfenstein.Upscale) {
     groundColor := color.RGBA{0x00, 0x99, 0x99, 0xff}
 
     gc.SetFillColor(groundColor)
@@ -274,10 +278,10 @@ func renderGround(gc *draw2dimg.GraphicContext, viewOffset, screenWidth, screenH
 
     draw2dkit.Rectangle(
         gc,
-        float64(viewOffset),
-        float64(screenHeight/2),
-        float64(viewOffset+screenWidth),
-        float64(screenHeight),
+        0,
+        up.ScaleHeight(float64(screenHeight/2)),
+        up.ScaleWidth(float64(screenWidth)),
+        up.ScaleHeight(float64(screenHeight)),
     )
     gc.FillStroke()
 }
@@ -308,6 +312,22 @@ func renderLevel(gc *draw2dimg.GraphicContext) {
     blockSize := gs.GetBlockSize()
     mapSize := gs.GetMapSize()
 
+    // minimap background
+    gc.SetFillColor(color.RGBA{0x00, 0x00, 0x00, 0xff})
+    gc.SetStrokeColor(color.RGBA{0x00, 0x00, 0x00, 0xff})
+
+    draw2dkit.Rectangle(
+        gc,
+        0,
+        0,
+        float64(mapSize*blockSize),
+        float64(mapSize*blockSize),
+    )
+    gc.FillStroke()
+
+    gc.SetFillColor(color.RGBA{0xff, 0xff, 0xff, 0xcc})
+    gc.SetStrokeColor(color.RGBA{0xff, 0xff, 0xff, 0xcc})
+
     for y := 0; y < mapSize; y++ {
         for x := 0; x < mapSize; x++ {
             if level.Walls[x+y*mapSize] == 0 {
@@ -315,7 +335,7 @@ func renderLevel(gc *draw2dimg.GraphicContext) {
                 continue
             }
 
-            c := color.RGBA{0xff, 0xff, 0xff, 0xff}
+            c := color.RGBA{0xff, 0xff, 0xff, 0xcc}
 
             if level.Walls[x+y*mapSize] == wolfenstein.Door {
                 c.R = 0
@@ -338,8 +358,8 @@ func renderLevel(gc *draw2dimg.GraphicContext) {
                 gc,
                 float64(x*blockSize+1),
                 float64(y*blockSize+1),
-                float64(x*blockSize+blockSize-1),
-                float64(y*blockSize+blockSize-1),
+                float64(x*blockSize+blockSize-2),
+                float64(y*blockSize+blockSize-2),
             )
             gc.FillStroke()
         }
@@ -348,8 +368,8 @@ func renderLevel(gc *draw2dimg.GraphicContext) {
 
 func renderPlayer(gc *draw2dimg.GraphicContext) {
     // draw player on screen
-    gc.SetFillColor(color.RGBA{0xff, 0xff, 0x00, 0xff})
-    gc.SetStrokeColor(color.RGBA{0xff, 0xff, 0x00, 0xff})
+    gc.SetFillColor(color.RGBA{0xff, 0xff, 0x00, 0xcc})
+    gc.SetStrokeColor(color.RGBA{0xff, 0xff, 0x00, 0xcc})
     gc.BeginPath()
 
     // draw player on screen

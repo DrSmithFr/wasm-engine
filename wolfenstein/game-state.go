@@ -30,7 +30,7 @@ func NewGameState(width, height int) (*GameState, error) {
     gs.level = Level0
 
     gs.mapSize = 8
-    gs.blockSize = 64
+    gs.blockSize = 32
 
     gs.player = Player{
         Position: Point{

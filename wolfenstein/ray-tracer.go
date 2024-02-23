@@ -16,6 +16,7 @@ func NewRayTracer(gs *GameState) *RayTracer {
 }
 
 func (rt *RayTracer) ComputeRays() []Ray {
+    const precision = 2
     const maxDepth = 8
     gs := rt.gameState
 
@@ -31,10 +32,10 @@ func (rt *RayTracer) ComputeRays() []Ray {
     mapSize := gs.GetMapSize()
     playerX, playerY, _, _ := gs.GetPlayerPosition()
 
-    oneRadian := 0.0174533
+    oneRadian := 0.0174533 / precision
     rayAngle = gs.GetPlayerAngle()
 
-    const FieldOfViewsAngle = 90
+    const FieldOfViewsAngle = 60 * precision
     rayAngle -= oneRadian * FieldOfViewsAngle / 2
 
     if rayAngle < 0 {

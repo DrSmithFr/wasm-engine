@@ -32,7 +32,7 @@
 
       const go = new Go();
       let mod, inst;
-      WebAssembly.instantiateStreaming(fetch("game/wolfenstein.wasm"), go.importObject).then(
+      WebAssembly.instantiateStreaming(fetch("canv/wolfenstein.wasm"), go.importObject).then(
         (result) => go.run(result.instance)
       );
     </script>
