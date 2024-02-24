@@ -1,9 +1,10 @@
-package browser
+package canvas
 
 import (
     "github.com/golang/freetype/truetype"
     "github.com/llgcode/draw2d"
     "github.com/llgcode/draw2d/draw2dimg"
+    "go-webgl/browser"
     "image"
     "syscall/js"
 )
@@ -84,14 +85,14 @@ func (c *Canvas2d) Set(canvas js.Value, width int, height int) {
     c.gctx = draw2dimg.NewGraphicContext(c.image)
 
     // init font
-    c.font, _ = truetype.Parse(FontData["font.ttf"])
+    c.font, _ = truetype.Parse(browser.FontData["font.ttf"])
 
     c.fontData = draw2d.FontData{
         Name:   "roboto",
         Family: draw2d.FontFamilySans,
         Style:  draw2d.FontStyleNormal,
     }
-    fontCache := &FontCache{}
+    fontCache := &browser.FontCache{}
     fontCache.Store(c.fontData, c.font)
 
     c.gctx.FontCache = fontCache
@@ -174,7 +175,7 @@ func (c *Canvas2d) initFrameUpdate(rf RenderFunc) {
     }()
 }
 
-// Does the actuall copy over of the image data for the 'render' call.
+// Does the actually copy over of the image data for the 'render' call.
 func (c *Canvas2d) imgCopy() {
     // TODO:  This currently does multiple data copies.   go image buffer -> JS Uint8Array,   Then JS Uint8Array -> ImageData,  then ImageData into the Canvas.
     // Would like to eliminate at least one of them, however currently CopyBytesToJS only supports Uint8Array  rather than the Uint8ClampedArray of ImageData.

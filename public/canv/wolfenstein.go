@@ -4,7 +4,9 @@ import (
     "fmt"
     "github.com/llgcode/draw2d/draw2dimg"
     "github.com/llgcode/draw2d/draw2dkit"
+    "go-webgl/browser"
     "go-webgl/canvas"
+    "go-webgl/controller"
     "go-webgl/wolfenstein"
     "image/color"
     "math"
@@ -13,18 +15,9 @@ import (
 )
 
 var DOM *browser.DOM
-var cvs *browser.Canvas2d
+var ctl controller.Interface
+var cvs *canvas.Canvas2d
 var gs *wolfenstein.GameState
-
-type move struct {
-    up     bool
-    down   bool
-    left   bool
-    right  bool
-    action bool
-}
-
-var keyboard = move{false, false, false, false, false}
 
 var width float64
 var height float64
@@ -32,12 +25,14 @@ var height float64
 func main() {
     // loading DOM to memory
     DOM = browser.LoadDOM()
+    ctl = controller.NewKeyboardOnly()
 
     // setting up everything
+    ctl.Init(*DOM)
     bindEvents(*DOM)
 
     // create canvas
-    cvs, _ = browser.NewCanvas2d(false)
+    cvs, _ = canvas.NewCanvas2d(false)
     cvs.Create(
         js.Global().Get("innerWidth").Int(),
         js.Global().Get("innerHeight").Int(),
@@ -67,28 +62,6 @@ func bindEvents(DOM browser.DOM) {
     })
 
     DOM.Window.Call("addEventListener", "resize", resizeEventHandler)
-
-    // let's handle key down
-    var keydownEventHandler = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-        keydownEvent(DOM, args[0])
-        return nil
-    })
-
-    var keyupEventHandler = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-        keyupEvent(DOM, args[0])
-        return nil
-    })
-
-    DOM.Document.Call("addEventListener", "keydown", keydownEventHandler)
-    DOM.Document.Call("addEventListener", "keyup", keyupEventHandler)
-
-    // let's handle that mouse pointer down
-    var mouseEventHandler = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-        clickEvent(DOM, args[0])
-        return nil
-    })
-
-    DOM.Window.Call("addEventListener", "pointerdown", mouseEventHandler)
 }
 
 func resizeEvent(DOM browser.DOM, event js.Value) {
@@ -96,56 +69,7 @@ func resizeEvent(DOM browser.DOM, event js.Value) {
     windowsHeight := js.Global().Get("innerHeight").Int()
 
     cvs.SetSize(windowsWidth, windowsHeight)
-
-    width = float64(windowsWidth)
-    height = float64(windowsHeight)
-
     go DOM.Log(fmt.Sprintf("resizeEvent x:%d y:%d", windowsWidth, windowsHeight))
-}
-
-func keydownEvent(DOM browser.DOM, event js.Value) {
-    code := event.Get("code").String()
-
-    switch code {
-    case "ArrowUp", "KeyW":
-        keyboard.up = true
-    case "ArrowDown", "KeyS":
-        keyboard.down = true
-    case "ArrowRight", "KeyD":
-        keyboard.right = true
-    case "ArrowLeft", "KeyA":
-        keyboard.left = true
-    case "KeyE":
-        keyboard.action = true
-    }
-
-    //go DOM.Log(fmt.Sprintf("key down:%s", code))
-}
-
-func keyupEvent(DOM browser.DOM, event js.Value) {
-    code := event.Get("code").String()
-
-    switch code {
-    case "ArrowUp", "KeyW":
-        keyboard.up = false
-    case "ArrowDown", "KeyS":
-        keyboard.down = false
-    case "ArrowRight", "KeyD":
-        keyboard.right = false
-    case "ArrowLeft", "KeyA":
-        keyboard.left = false
-    case "KeyE":
-        keyboard.action = false
-    }
-
-    //go DOM.Log(fmt.Sprintf("key up:%s", code))
-}
-
-func clickEvent(DOM browser.DOM, event js.Value) {
-    mouseX := event.Get("clientX").Int()
-    mouseY := event.Get("clientY").Int()
-
-    go DOM.Log(fmt.Sprintf("mouseEvent x:%d y:%d", mouseX, mouseY))
 }
 
 func GameLoop(gc *draw2dimg.GraphicContext) bool {
@@ -281,20 +205,21 @@ func renderGround(gc *draw2dimg.GraphicContext, screenWidth, screenHeight int, u
 }
 
 func handleMove() {
+    actions := ctl.GetState()
 
-    if keyboard.action {
+    if actions.Action {
         gs.Action()
     }
 
-    if keyboard.up {
+    if actions.Up {
         gs.MoveUp()
-    } else if keyboard.down {
+    } else if actions.Down {
         gs.MoveDown()
     }
 
-    if keyboard.right {
+    if actions.Right {
         gs.TurnRight()
-    } else if keyboard.left {
+    } else if actions.Left {
         gs.TurnLeft()
     }
 }
