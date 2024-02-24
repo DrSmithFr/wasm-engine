@@ -21,17 +21,22 @@ var height int
 func main() {
     // loading DOM to memory
     DOM = browser.LoadDOM()
-    controls = controller.NewKeyboardOnly()
-    engine := render.NewWasmBuffered()
-
-    // creating game state
     width, height = DOM.GetScreenSize()
-    gs, _ = wolfenstein.NewGameState(width, height)
+
+    engine := render.NewDirectCtx(width, height, 0, 0)
+    controls = controller.NewKeyboardOnly()
 
     // setting up everything
-    engine.Init(width, height, 0, 0)
+    engine.Init(DOM)
     controls.Init(DOM)
 
+    // creating game state
+    var err error
+    if gs, err = wolfenstein.NewGameState(width, height); err != nil {
+        panic(err)
+    }
+
+    // start the game loop
     engine.Start(30, GameLoop)
 
     // avoid WebAssembly to exit the program
@@ -85,8 +90,9 @@ func renderGameView(r render.Renderer, rays []wolfenstein.Ray) {
         Target: wolfenstein.Resolution{int(width), int(height)},
     }
 
-    renderSky(r, screenWidth, screenHeight, up)
-    renderGround(r, screenWidth, screenHeight, up)
+    w, h := r.Size()
+    renderSky(r, w, h, up)
+    renderGround(r, w, h, up)
 
     for rayN, ray := range rays {
         angle := wolfenstein.FixAngle(ray.Origin.Angle + 30 - rayN*60/len(rays))

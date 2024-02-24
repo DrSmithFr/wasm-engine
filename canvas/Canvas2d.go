@@ -14,7 +14,7 @@ type Canvas2d struct {
     body   js.Value
 
     // canvas properties
-    canvas js.Value
+    canvas *js.Value
 
     // position properties
     width  int
@@ -59,11 +59,11 @@ func (c *Canvas2d) Create(width int, height int) {
     canvas.Set("width", width)
     c.body.Call("appendChild", canvas)
 
-    c.Bind(canvas, width, height)
+    c.Bind(&canvas, width, height)
 }
 
 // Used to setup with an existing Canvas element which was obtained from JS
-func (c *Canvas2d) Bind(canvas js.Value, width int, height int) {
+func (c *Canvas2d) Bind(canvas *js.Value, width int, height int) {
     c.canvas = canvas
     c.height = height
     c.width = width
@@ -81,7 +81,7 @@ func (c *Canvas2d) Size() (int, int) {
     return c.width, c.height
 }
 
-func (c *Canvas2d) Js() js.Value {
+func (c *Canvas2d) Js() *js.Value {
     return c.canvas
 }
 

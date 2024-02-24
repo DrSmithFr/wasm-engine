@@ -1,13 +1,14 @@
 package render
 
 import (
+    "go-webgl/browser"
     "image/color"
 )
 
 type RenderFn func(r Renderer) bool
 
 type Renderer interface {
-    Init(width, height, x, y int)
+    Init(dom browser.DOM)
 
     SetSize(width, height int)
     Size() (int, int)
