@@ -14,6 +14,19 @@ The original engine is written in C++ and uses OpenGL for rendering.
 - [ ] Allow video playback using the HTML5 video element for cinematic.
 - [ ] Implement multiplayer support.
 
+## Engine Features
+
+- [x] Basic 3D rendering using RayCasting of 2D cell-base map.
+- [x] Basic collision detection.
+- [x] Basic player movement (forward, backward, turn left and right).
+- [ ] Advance 3D rendering using RayCasting of vertex-base map.
+- [ ] Advance collision detection.
+- [ ] Advance player movement (Using acceleration vector like Quake).
+- [ ] Texture mapping.
+- [ ] Sprite rendering.
+- [ ] Lighting.
+- [ ] Particle effects.
+- [ ] Light Bouncing:
 
 ## Deliverables
 
