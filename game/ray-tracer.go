@@ -1,4 +1,4 @@
-package wolfenstein
+package game
 
 import (
     "github.com/llgcode/draw2d/draw2dimg"

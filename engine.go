@@ -4,8 +4,8 @@ import (
     "go-webgl/browser"
     "go-webgl/canvas"
     "go-webgl/controller"
+    "go-webgl/game"
     "go-webgl/render"
-    "go-webgl/wolfenstein"
     "image/color"
     "math"
 )
@@ -13,7 +13,7 @@ import (
 var DOM browser.DOM
 var controls controller.Interface
 var cvs *canvas.Canvas2d
-var gs *wolfenstein.GameState
+var gs *game.GameState
 
 var width int
 var height int
@@ -32,7 +32,7 @@ func main() {
 
     // creating game state
     var err error
-    if gs, err = wolfenstein.NewGameState(width, height); err != nil {
+    if gs, err = game.NewGameState(width, height); err != nil {
         panic(err)
     }
 
@@ -48,7 +48,7 @@ func GameLoop(r render.Renderer) bool {
     // render default color
     r.Clear()
 
-    rt := wolfenstein.NewRayTracer(gs)
+    rt := game.NewRayTracer(gs)
     rays := rt.ComputeRays()
 
     renderGameView(r, rays)
@@ -59,13 +59,13 @@ func GameLoop(r render.Renderer) bool {
     return true
 }
 
-func renderMiniMap(r render.Renderer, rays []wolfenstein.Ray) {
+func renderMiniMap(r render.Renderer, rays []game.Ray) {
     renderLevel(r)
     renderRayCasting(r, rays)
     renderPlayer(r)
 }
 
-func renderRayCasting(r render.Renderer, rays []wolfenstein.Ray) {
+func renderRayCasting(r render.Renderer, rays []game.Ray) {
     r.SetColor(color.RGBA{0xff, 0x00, 0x00, 0xff})
 
     for _, ray := range rays {
@@ -79,15 +79,15 @@ func renderRayCasting(r render.Renderer, rays []wolfenstein.Ray) {
     }
 }
 
-func renderGameView(r render.Renderer, rays []wolfenstein.Ray) {
+func renderGameView(r render.Renderer, rays []game.Ray) {
     const screenHeight = 320
     const lineWidth = 8
 
     screenWidth := len(rays) * lineWidth
 
-    up := &wolfenstein.Upscale{
-        Source: wolfenstein.Resolution{screenWidth, screenHeight},
-        Target: wolfenstein.Resolution{int(width), int(height)},
+    up := &game.Upscale{
+        Source: game.Resolution{screenWidth, screenHeight},
+        Target: game.Resolution{int(width), int(height)},
     }
 
     w, h := r.Size()
@@ -95,8 +95,8 @@ func renderGameView(r render.Renderer, rays []wolfenstein.Ray) {
     renderGround(r, w, h, up)
 
     for rayN, ray := range rays {
-        angle := wolfenstein.FixAngle(ray.Origin.Angle + 30 - rayN*60/len(rays))
-        ca := wolfenstein.DegToRad(float64(angle))
+        angle := game.FixAngle(ray.Origin.Angle + 30 - rayN*60/len(rays))
+        ca := game.DegToRad(float64(angle))
 
         // fix fisheye
         distT := ray.Distance * math.Cos(ca)
@@ -110,22 +110,22 @@ func renderGameView(r render.Renderer, rays []wolfenstein.Ray) {
 
         var c color.RGBA
 
-        if ray.Impact.Type == wolfenstein.Horizontal {
+        if ray.Impact.Type == game.Horizontal {
             c = color.RGBA{0xcc, 0xcc, 0xcc, 0xff}
         } else {
             c = color.RGBA{0xff, 0xff, 0xff, 0xff}
         }
 
-        if ray.Impact.CellType == wolfenstein.Door {
+        if ray.Impact.CellType == game.Door {
             c.R = 0
             c.G = 0
         }
 
-        if ray.Impact.CellType == wolfenstein.Window {
+        if ray.Impact.CellType == game.Window {
             c.R = 0
         }
 
-        if ray.Impact.CellType == wolfenstein.Checkerboard {
+        if ray.Impact.CellType == game.Checkerboard {
             c.R = 0
             c.B = 0
         }
@@ -140,14 +140,14 @@ func renderGameView(r render.Renderer, rays []wolfenstein.Ray) {
     }
 }
 
-func renderSky(r render.Renderer, screenWidth, screenHeight int, up *wolfenstein.Upscale) {
+func renderSky(r render.Renderer, screenWidth, screenHeight int, up *game.Upscale) {
     skyColor := color.RGBA{0x00, 0x00, 0x99, 0xff}
 
     r.SetColor(skyColor)
     r.DrawRect(0, 0, float64(screenWidth), float64(screenHeight/2))
 }
 
-func renderGround(r render.Renderer, screenWidth, screenHeight int, up *wolfenstein.Upscale) {
+func renderGround(r render.Renderer, screenWidth, screenHeight int, up *game.Upscale) {
     groundColor := color.RGBA{0x00, 0x99, 0x99, 0xff}
 
     r.SetColor(groundColor)
@@ -195,16 +195,16 @@ func renderLevel(r render.Renderer) {
 
             c := color.RGBA{0xff, 0xff, 0xff, 0xcc}
 
-            if level.Walls[x+y*mapSize] == wolfenstein.Door {
+            if level.Walls[x+y*mapSize] == game.Door {
                 c.R = 0
                 c.G = 0
             }
 
-            if level.Walls[x+y*mapSize] == wolfenstein.Window {
+            if level.Walls[x+y*mapSize] == game.Window {
                 c.R = 0
             }
 
-            if level.Walls[x+y*mapSize] == wolfenstein.Checkerboard {
+            if level.Walls[x+y*mapSize] == game.Checkerboard {
                 c.R = 0
                 c.B = 0
             }

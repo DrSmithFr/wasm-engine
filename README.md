@@ -27,6 +27,6 @@ The original engine is written in C++ and uses OpenGL for rendering.
 
     run `cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" public/build/`
 
-4. Run `go build -o public/build/engine.wasm engine.go` to build the WebAssembly binary.
+4. Run `GOARCH=wasm GOOS=js go build -o public/build/engine.wasm engine.go` to build the WebAssembly binary.
 5. Run `go run server.go` to start the server.
 6. Open `http://localhost:8080` in your browser.

@@ -1,4 +1,4 @@
-package wolfenstein
+package game
 
 type Ray struct {
     Origin   Point

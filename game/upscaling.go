@@ -1,4 +1,4 @@
-package wolfenstein
+package game
 
 type Resolution struct {
     Width  int

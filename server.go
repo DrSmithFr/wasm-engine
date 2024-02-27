@@ -1,18 +1,25 @@
 package main
 
 import (
+    "fmt"
     "log"
     "net/http"
 )
 
 func main() {
-    fs := http.FileServer(http.Dir("./public"))
-    http.Handle("/", fs)
+    fmt.Println("Serving at http://localhost:8080")
+    http.Handle("/", &noCache{Handler: http.FileServer(http.Dir("."))})
 
-    log.Print("Listening on :8080...")
-    err := http.ListenAndServe(":8080", nil)
-
-    if err != nil {
-        log.Fatal(err)
+    if err := http.ListenAndServe(":8080", nil); err != nil {
+        log.Fatalln(err)
     }
+}
+
+type noCache struct {
+    http.Handler
+}
+
+func (h *noCache) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+    w.Header().Set("Cache-Control", "no-cache")
+    h.Handler.ServeHTTP(w, r)
 }

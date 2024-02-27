@@ -1,4 +1,4 @@
-package wolfenstein
+package game
 
 import (
     "math"
