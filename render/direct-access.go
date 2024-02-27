@@ -98,27 +98,28 @@ func (r *DirectCtx) SetColor(c color.RGBA) {
 }
 
 func (r *DirectCtx) DrawCircle(x, y, width float64) {
-    radius := width / 2
-
     r.ctx.Call("beginPath")
-    r.ctx.Call("arc", x, y, radius, 0, math.Pi*2, true)
+    r.ctx.Call("arc", math.Round(x), math.Round(y), math.Round(width), 0, math.Pi*2, true)
     r.ctx.Call("fill")
     r.ctx.Call("closePath")
 }
 
 func (r *DirectCtx) DrawLine(x1, y1, x2, y2, width float64) {
     r.ctx.Call("beginPath")
-    r.ctx.Call("moveTo", x1, y1)
-    r.ctx.Call("lineTo", x2, y2)
+    r.ctx.Set("lineWidth", int64(math.Round(width)))
+    r.ctx.Call("moveTo", math.Round(x1), math.Round(y1))
+    r.ctx.Call("lineTo", math.Round(x2), math.Round(y2))
     r.ctx.Call("stroke")
+    r.ctx.Call("closePath")
+    r.ctx.Set("lineWidth", 1)
 }
 
 func (r *DirectCtx) DrawRect(x1, y1, x2, y2 float64) {
     r.ctx.Call("beginPath")
-    r.ctx.Call("moveTo", x1, y1)
-    r.ctx.Call("lineTo", x2, y1)
-    r.ctx.Call("lineTo", x2, y2)
-    r.ctx.Call("lineTo", x1, y2)
+    r.ctx.Call("moveTo", math.Round(x1), math.Round(y1))
+    r.ctx.Call("lineTo", math.Round(x2), math.Round(y1))
+    r.ctx.Call("lineTo", math.Round(x2), math.Round(y2))
+    r.ctx.Call("lineTo", math.Round(x1), math.Round(y2))
     r.ctx.Call("fill")
     r.ctx.Call("closePath")
 }
