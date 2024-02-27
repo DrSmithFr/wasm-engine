@@ -7,7 +7,7 @@
     <title>Ray Casting</title>
   </head>
   <body>
-    <script src="wasm_exec.js"></script>
+    <script src="build/wasm_exec.js"></script>
 
     <script>
       if (!WebAssembly.instantiateStreaming) {
@@ -19,7 +19,7 @@
 
       const go = new Go();
       let mod, inst;
-      WebAssembly.instantiateStreaming(fetch("canv/wolfenstein.wasm"), go.importObject).then(
+      WebAssembly.instantiateStreaming(fetch("build/engine.wasm"), go.importObject).then(
         (result) => go.run(result.instance)
       );
     </script>

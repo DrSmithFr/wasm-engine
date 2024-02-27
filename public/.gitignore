@@ -1,2 +1,2 @@
-*.wasm
-wasm_exec.js
+build/*
+!build/.gitkeep
