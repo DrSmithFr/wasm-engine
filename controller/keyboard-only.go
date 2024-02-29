@@ -12,10 +12,12 @@ type KeyboardOnly struct {
 func NewKeyboardOnly() *KeyboardOnly {
     return &KeyboardOnly{
         move: ActionState{
-            Up:    false,
-            Down:  false,
-            Left:  false,
-            Right: false,
+            Up:        false,
+            Down:      false,
+            Left:      false,
+            Right:     false,
+            TurnLeft:  false,
+            TurnRight: false,
         },
     }
 }
@@ -57,11 +59,15 @@ func (k *KeyboardOnly) keydownEvent(event js.Value) {
         k.move.Up = true
     case "ArrowDown", "KeyS":
         k.move.Down = true
-    case "ArrowRight", "KeyD":
-        k.move.Right = true
-    case "ArrowLeft", "KeyA":
+    case "KeyQ":
         k.move.Left = true
     case "KeyE":
+        k.move.Right = true
+    case "ArrowRight", "KeyD":
+        k.move.TurnRight = true
+    case "ArrowLeft", "KeyA":
+        k.move.TurnLeft = true
+    case "KeyT":
         k.move.Action = true
     }
 }
@@ -74,11 +80,15 @@ func (k *KeyboardOnly) keyupEvent(event js.Value) {
         k.move.Up = false
     case "ArrowDown", "KeyS":
         k.move.Down = false
-    case "ArrowRight", "KeyD":
-        k.move.Right = false
-    case "ArrowLeft", "KeyA":
+    case "KeyQ":
         k.move.Left = false
     case "KeyE":
+        k.move.Right = false
+    case "ArrowRight", "KeyD":
+        k.move.TurnRight = false
+    case "ArrowLeft", "KeyA":
+        k.move.TurnLeft = false
+    case "KeyT":
         k.move.Action = false
     }
 }

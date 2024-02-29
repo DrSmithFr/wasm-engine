@@ -2,7 +2,6 @@ package main
 
 import (
     "go-webgl/browser"
-    "go-webgl/canvas"
     "go-webgl/controller"
     "go-webgl/game"
     "go-webgl/render"
@@ -12,7 +11,6 @@ import (
 
 var DOM browser.DOM
 var controls controller.Interface
-var cvs *canvas.Canvas2d
 var gs *game.GameState
 
 var width int
@@ -87,7 +85,7 @@ func renderGameView(r render.Renderer, rays []game.Ray) {
 
     up := &game.Upscale{
         Source: game.Resolution{screenWidth, screenHeight},
-        Target: game.Resolution{int(width), int(height)},
+        Target: game.Resolution{width, height},
     }
 
     w, h := r.Size()
@@ -167,9 +165,9 @@ func handleMove() {
         gs.MoveDown()
     }
 
-    if actions.Right {
+    if actions.TurnRight {
         gs.TurnRight()
-    } else if actions.Left {
+    } else if actions.TurnLeft {
         gs.TurnLeft()
     }
 }

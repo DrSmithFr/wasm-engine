@@ -87,20 +87,19 @@ func (rt *RayTracer) ComputeRays() []Ray {
             dof = maxDepth
         }
 
-        for ; dof < maxDepth; {
+        for ; dof < maxDepth; dof++ {
             cell := gs.GetMapValueAt(rayX, rayY)
 
             // hit wall
             if cell > EmptyCell {
                 TargetTypeH = cell
-                dof = maxDepth
                 hx = rayX
                 hy = rayY
                 distH = dist(playerX, playerY, hx, hy, rayAngleRad)
+                break
             } else {
                 rayX += rayTargetX
                 rayY += rayTargetY
-                dof++
             }
         }
 
@@ -135,7 +134,7 @@ func (rt *RayTracer) ComputeRays() []Ray {
             dof = maxDepth
         }
 
-        for ; dof < maxDepth; {
+        for ; dof < maxDepth; dof++ {
             cell := gs.GetMapValueAt(rayX, rayY)
 
             // hit wall
@@ -144,11 +143,10 @@ func (rt *RayTracer) ComputeRays() []Ray {
                 vx = rayX
                 vy = rayY
                 distV = dist(playerX, playerY, vx, vy, rayAngleRad)
-                dof = maxDepth
+                break
             } else {
                 rayX += rayTargetX
                 rayY += rayTargetY
-                dof++
             }
         }
 

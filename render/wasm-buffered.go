@@ -73,7 +73,7 @@ func (r *WasmBuffered) Init(dom browser.DOM) {
     r.ctx = r.canvas.Js().Call("getContext", "2d")
     r.imgData = r.ctx.Call("createImageData", r.width, r.height) // Note Width, then Height
     r.image = image.NewRGBA(image.Rect(0, 0, r.width, r.height))
-    r.copybuff = js.Global().Get("Uint8Array").New(len(r.image.Pix)) // Static JS buffer for copying data out to JS. Defined once and re-used to save on un-needed allocations
+    r.copybuff = js.Global().Get("Uint8Array").New(len(r.image.Pix)) // Static JS drawCtx for copying data out to JS. Defined once and re-used to save on un-needed allocations
 
     r.gctx = draw2dimg.NewGraphicContext(r.image)
 }
@@ -85,7 +85,7 @@ func (r *WasmBuffered) SetSize(width int, height int) {
     r.ctx = r.canvas.Js().Call("getContext", "2d")
     r.imgData = r.ctx.Call("createImageData", width, height) // Note Width, then Height
     r.image = image.NewRGBA(image.Rect(0, 0, width, height))
-    r.copybuff = js.Global().Get("Uint8Array").New(len(r.image.Pix)) // Static JS buffer for copying data out to JS. Defined once and re-used to save on un-needed allocations
+    r.copybuff = js.Global().Get("Uint8Array").New(len(r.image.Pix)) // Static JS drawCtx for copying data out to JS. Defined once and re-used to save on un-needed allocations
 
     r.gctx = draw2dimg.NewGraphicContext(r.image)
 }
@@ -184,7 +184,7 @@ func (r *WasmBuffered) initFrameUpdate(renderingFn RenderFn) {
 
 // Does the actually copy over of the image data for the 'render' call.
 func (r *WasmBuffered) imgCopy() {
-    // TODO:  This currently does multiple data copies.   go image buffer -> JS Uint8Array,   Then JS Uint8Array -> ImageData,  then ImageData into the canvas.
+    // TODO:  This currently does multiple data copies.   go image drawCtx -> JS Uint8Array,   Then JS Uint8Array -> ImageData,  then ImageData into the canvas.
     // Would like to eliminate at least one of them, however currently CopyBytesToJS only supports Uint8Array  rather than the Uint8ClampedArray of ImageData.
 
     js.CopyBytesToJS(r.copybuff, r.image.Pix)
