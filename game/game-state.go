@@ -137,6 +137,64 @@ func (gs *GameState) MoveDown() {
     }
 }
 
+func (gs *GameState) MoveLeft() {
+    posX := gs.player.Position.X + gs.player.Delta.Y
+    posY := gs.player.Position.Y - gs.player.Delta.X
+
+    var xo, yo float64
+    const offset = 5
+
+    if gs.player.Delta.Y > 0 {
+        xo = -offset
+    } else {
+        xo = offset
+    }
+
+    if gs.player.Delta.X > 0 {
+        yo = -offset
+    } else {
+        yo = offset
+    }
+
+    // allow front wall sliding
+    if gs.GetMapValueAt(posX+xo, gs.player.Position.Y) == EmptyCell {
+        gs.player.Position.X = posX
+    }
+
+    if gs.GetMapValueAt(gs.player.Position.X, posY+yo) == EmptyCell {
+        gs.player.Position.Y = posY
+    }
+}
+
+func (gs *GameState) MoveRight() {
+    posX := gs.player.Position.X - gs.player.Delta.Y
+    posY := gs.player.Position.Y + gs.player.Delta.X
+
+    var xo, yo float64
+    const offset = 5
+
+    if gs.player.Delta.Y > 0 {
+        xo = offset
+    } else {
+        xo = -offset
+    }
+
+    if gs.player.Delta.X > 0 {
+        yo = offset
+    } else {
+        yo = -offset
+    }
+
+    // allow front wall sliding
+    if gs.GetMapValueAt(posX+xo, gs.player.Position.Y) == EmptyCell {
+        gs.player.Position.X = posX
+    }
+
+    if gs.GetMapValueAt(gs.player.Position.X, posY+yo) == EmptyCell {
+        gs.player.Position.Y = posY
+    }
+}
+
 const AngularMomentum = 5
 
 func (gs *GameState) TurnLeft() {

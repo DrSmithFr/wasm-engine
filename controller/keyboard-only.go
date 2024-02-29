@@ -59,13 +59,13 @@ func (k *KeyboardOnly) keydownEvent(event js.Value) {
         k.move.Up = true
     case "ArrowDown", "KeyS":
         k.move.Down = true
-    case "KeyQ":
+    case "ArrowLeft":
         k.move.Left = true
-    case "KeyE":
+    case "ArrowRight":
         k.move.Right = true
-    case "ArrowRight", "KeyD":
+    case "KeyD":
         k.move.TurnRight = true
-    case "ArrowLeft", "KeyA":
+    case "KeyA":
         k.move.TurnLeft = true
     case "KeyT":
         k.move.Action = true
@@ -80,13 +80,13 @@ func (k *KeyboardOnly) keyupEvent(event js.Value) {
         k.move.Up = false
     case "ArrowDown", "KeyS":
         k.move.Down = false
-    case "KeyQ":
+    case "ArrowLeft":
         k.move.Left = false
-    case "KeyE":
+    case "ArrowRight":
         k.move.Right = false
-    case "ArrowRight", "KeyD":
+    case "KeyD":
         k.move.TurnRight = false
-    case "ArrowLeft", "KeyA":
+    case "KeyA":
         k.move.TurnLeft = false
     case "KeyT":
         k.move.Action = false

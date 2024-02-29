@@ -83,9 +83,9 @@ func renderGameView(r render.Renderer, rays []game.Ray) {
 
     screenWidth := len(rays) * lineWidth
 
-    up := &game.Upscale{
-        Source: game.Resolution{screenWidth, screenHeight},
-        Target: game.Resolution{width, height},
+    up := &render.Upscale{
+        Source: render.Resolution{screenWidth, screenHeight},
+        Target: render.Resolution{width, height},
     }
 
     w, h := r.Size()
@@ -138,14 +138,14 @@ func renderGameView(r render.Renderer, rays []game.Ray) {
     }
 }
 
-func renderSky(r render.Renderer, screenWidth, screenHeight int, up *game.Upscale) {
+func renderSky(r render.Renderer, screenWidth, screenHeight int, up *render.Upscale) {
     skyColor := color.RGBA{0x00, 0x00, 0x99, 0xff}
 
     r.SetColor(skyColor)
     r.DrawRect(0, 0, float64(screenWidth), float64(screenHeight/2))
 }
 
-func renderGround(r render.Renderer, screenWidth, screenHeight int, up *game.Upscale) {
+func renderGround(r render.Renderer, screenWidth, screenHeight int, up *render.Upscale) {
     groundColor := color.RGBA{0x00, 0x99, 0x99, 0xff}
 
     r.SetColor(groundColor)
@@ -163,6 +163,10 @@ func handleMove() {
         gs.MoveUp()
     } else if actions.Down {
         gs.MoveDown()
+    } else if actions.Right {
+        gs.MoveRight()
+    } else if actions.Left {
+        gs.MoveLeft()
     }
 
     if actions.TurnRight {

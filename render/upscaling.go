@@ -1,4 +1,4 @@
-package game
+package render
 
 type Resolution struct {
     Width  int
