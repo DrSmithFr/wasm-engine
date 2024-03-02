@@ -2,6 +2,7 @@ package controller
 
 import (
     "go-webgl/browser"
+    "log"
     "syscall/js"
 )
 
@@ -18,6 +19,7 @@ func NewKeyboardOnly() *KeyboardOnly {
             Right:     false,
             TurnLeft:  false,
             TurnRight: false,
+            ShowMap:   false,
         },
     }
 }
@@ -54,6 +56,8 @@ func (k *KeyboardOnly) bindEvents(dom browser.DOM) {
 func (k *KeyboardOnly) keydownEvent(event js.Value) {
     code := event.Get("code").String()
 
+    log.Printf("Keydown event: %s", code)
+
     switch code {
     case "ArrowUp", "KeyW":
         k.move.Up = true
@@ -69,6 +73,8 @@ func (k *KeyboardOnly) keydownEvent(event js.Value) {
         k.move.TurnLeft = true
     case "KeyT":
         k.move.Action = true
+    case "KeyM":
+        k.move.ShowMap = !k.move.ShowMap
     }
 }
 

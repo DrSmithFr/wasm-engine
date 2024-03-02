@@ -32,6 +32,7 @@ func NewDirectCtx(width, height int) *DirectCtx {
         panic(err)
     }
 
+    c.SetSize(width, height)
     ctx := c.Js().Call("getContext", "2d")
 
     return &DirectCtx{

@@ -9,7 +9,9 @@ type ActionState struct {
     Right     bool
     TurnLeft  bool
     TurnRight bool
-    Action    bool
+
+    ShowMap bool
+    Action  bool
 }
 
 type Interface interface {
