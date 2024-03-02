@@ -2,6 +2,7 @@ package render
 
 import (
     "go-webgl/game"
+    "image/color"
     "math"
 )
 
@@ -103,16 +104,51 @@ func DrawWall(r Renderer, tx1, tz1, tx2, tz2 float64) {
     halfW := float64(screenW / 2)
     halfH := float64(screenH / 2)
 
+    // perspective projection top of the wall
     x1 := -tx1 * 16 / tz1
     y1a := -halfW / tz1
     y1b := halfW / tz1
 
+    // perspective projection bottom of the wall
     x2 := -tx2 * 16 / tz2
     y2a := -halfW / tz2
     y2b := halfW / tz2
 
-    r.DrawLine(halfW+x1, halfH+y1a, halfW+x2, halfH+y2a, 1)
+    // Mesh rendering
+    for x := x1; x <= x2; x++ {
+        if x < -halfW {
+            x = -halfW
+            continue
+        }
+
+        if x > halfW {
+            break
+        }
+
+        divider := x2 - x1
+
+        if divider == 0 {
+            divider = 1
+        }
+
+        ya := y1a + (x-x1)*(y2a-y1a)/divider
+        yb := y1b + (x-x1)*(y2b-y1b)/divider
+
+        // draw ceiling
+        r.SetColor(color.RGBA{150, 150, 150, 100})
+        r.DrawLine(halfW+x, 0, halfW+x, halfH+ya, 1)
+
+        // draw wall
+        r.SetColor(color.RGBA{255, 255, 0, 100})
+        r.DrawLine(halfW+x, halfH+ya, halfW+x, halfH+yb, 1)
+
+        // draw floor
+        r.SetColor(color.RGBA{0, 0, 255, 100})
+        r.DrawLine(halfW+x, halfH+yb, halfW+x, float64(screenH), 1)
+    }
+
+    // draw wall edges
+    r.SetColor(color.RGBA{255, 0, 255, 100})
+    r.DrawLine(halfW+x1, halfH+y1a, halfW+x1, halfH+y1b, 1)
     r.DrawLine(halfW+x2, halfH+y2a, halfW+x2, halfH+y2b, 1)
-    r.DrawLine(halfW+x2, halfH+y2b, halfW+x1, halfH+y1b, 1)
-    r.DrawLine(halfW+x1, halfH+y1b, halfW+x1, halfH+y1a, 1)
 }
