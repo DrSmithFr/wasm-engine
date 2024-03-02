@@ -13,17 +13,17 @@ func RenderSector(r Renderer, p game.Player, s game.Sector) {
 
 func RenderWall(r Renderer, p game.Player, w game.Wall) {
     // transform point to player's perspective
-    tx1, ty1, _ := TransformPointToPlayer(p, w.Points[0])
-    tx2, ty2, _ := TransformPointToPlayer(p, w.Points[1])
+    x1, y1, _ := TransformPointToPlayer(p, w.Points[0])
+    x2, y2, _ := TransformPointToPlayer(p, w.Points[1])
 
     // rotate the point around the player's view
-    var tz1, tz2 float64
-    tx1, tz1, tx2, tz2 = RotateAroundPlayer(p, tx1, ty1, tx2, ty2)
+    var z1, z2 float64
+    x1, z1, x2, z2 = RotateAroundPlayer(p, x1, y1, x2, y2)
 
     // draw the wall
-    if tz1 > 0 || tz2 > 0 {
-        //tx1, tz1, tx2, tz2 = ClipWallCoordinates(r, tx1, tz1, tx2, tz2)
-        DrawWall(r, tx1, tz1, tx2, tz2)
+    if z1 > 0 || z2 > 0 {
+        x1, z1, x2, z2 = ClipWallCoordinates(r, x1, z1, x2, z2)
+        DrawWall(r, x1, z1, x2, z2)
     }
 }
 
@@ -50,24 +50,15 @@ func RotateAroundPlayer(p game.Player, tx1, ty1, tx2, ty2 float64) (float64, flo
 
 func ClipWallCoordinates(r Renderer, tx1, tz1, tx2, tz2 float64) (float64, float64, float64, float64) {
     const zeroPos = 0.0001
-    const clippingOffset = 0.
 
-    screenW, screenH := r.Size()
-
-    halfW := float64(screenW / 2)
-    halfH := float64(screenH / 2)
-
-    // get player's view plane coordinates
-    px1 := zeroPos
-    py1 := zeroPos
-    px2 := halfW / 2
-    py2 := halfH / 2
+    screenW, _ := r.Size()
+    halfW := float64(screenW) / 2.0
 
     // if line crosses the player's view plane, clip it
-    ix1, iz1 := Intersect(tx1, tz1, tx2, tz2, -px1, py1, px2, py2)
-    ix2, iz2 := Intersect(tx1, tz1, tx2, tz2, px1, py1, px2, py2)
+    ix1, iz1 := Intersect(tx1, tz1, tx2, tz2, zeroPos, zeroPos, -halfW, 0)
+    ix2, iz2 := Intersect(tx1, tz1, tx2, tz2, zeroPos, zeroPos, halfW, 0)
 
-    if iz1 <= 0 {
+    if tz1 <= 0 {
         if iz1 > 0 {
             tx1 = ix1
             tz1 = iz1
@@ -77,7 +68,7 @@ func ClipWallCoordinates(r Renderer, tx1, tz1, tx2, tz2 float64) (float64, float
         }
     }
 
-    if iz2 <= 0 {
+    if tz2 <= 0 {
         if iz1 > 0 {
             tx2 = ix1
             tz2 = iz1
@@ -103,7 +94,7 @@ func Intersect(x1, y1, x2, y2, x3, y3, x4, y4 float64) (float64, float64) {
 }
 
 func CrossProduct(x1, y1, x2, y2 float64) float64 {
-    return x1*y2 - x2*y1
+    return x1*y2 - y1*x2
 }
 
 func DrawWall(r Renderer, tx1, tz1, tx2, tz2 float64) {
