@@ -1,50 +1,59 @@
 package game
 
-type Cell int
+import (
+    "math"
+)
+
+type Collision int
 
 const (
-    EmptyCell    Cell = 0
-    Checkerboard      = 1
-    Wall              = 2
-    Window            = 3
-    Door              = 4
+    None Collision = iota
+    Window
+    Door
 )
 
 type Map struct {
-    Walls   []Cell
-    Floor   []Cell
-    Ceiling []Cell
+    Sectors    []Sector
+    Spawn      Point3D
+    SpawnAngle int
 }
 
-var Level0 = Map{
-    Walls: []Cell{
-        1, 1, 1, 1, 1, 3, 1, 1,
-        1, 0, 0, 1, 0, 0, 0, 1,
-        1, 0, 0, 4, 0, 2, 0, 1,
-        1, 1, 4, 1, 0, 0, 0, 1,
-        2, 0, 0, 0, 0, 0, 0, 1,
-        2, 0, 0, 0, 0, 1, 0, 1,
-        2, 0, 0, 0, 0, 0, 0, 1,
-        1, 1, 3, 1, 3, 1, 3, 1,
-    },
-    Floor: []Cell{
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 1, 1, 0, 0,
-        0, 0, 0, 0, 2, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 2, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 1, 1, 1, 1, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-    },
-    Ceiling: []Cell{
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 1, 0,
-        0, 1, 3, 1, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-    },
+type Sector struct {
+    Walls []Wall
+}
+
+type Wall struct {
+    Points  [2]Point3D
+    Floor   float64
+    Ceiling float64
+    Portal  *Sector
+}
+
+func (p *Wall) RelativePosition(player Player) (float64, float64, float64, float64, float64, float64) {
+    x1, y1, z1 := p.Points[0].RelativePosition(player)
+    x2, y2, z2 := p.Points[1].RelativePosition(player)
+
+    return x1, y1, z1, x2, y2, z2
+}
+
+type Point3D struct {
+    X float64
+    Y float64
+    Z float64
+}
+
+func (p *Point3D) Position() (float64, float64, float64) {
+    return p.X, p.Y, p.Z
+}
+
+func (p *Point3D) RelativePosition(player Player) (float64, float64, float64) {
+    // transform point to player's perspective
+    x := p.X - player.Position.X
+    y := p.Y - player.Position.Y
+
+    // rotate point to player's perspective
+    z := x*math.Cos(player.Position.Rad()) + y*math.Sin(player.Position.Rad())
+    x = x*math.Sin(player.Position.Rad()) - y*math.Cos(player.Position.Rad())
+
+    return x, y, z
 }
