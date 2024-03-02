@@ -8,6 +8,7 @@ import (
     "go-webgl/render"
     "image/color"
     "log"
+    "syscall/js"
 )
 
 var DOM browser.DOM
@@ -52,8 +53,17 @@ func main() {
     // setting up everything
     log.Println("Binding engine and controls to DOM elements and events")
     gameView.Init(DOM)
+    mapView.Init(DOM)
     minimapView.Init(DOM)
     controls.Init(DOM)
+
+    // handle the window resize event
+    DOM.Window.Call("addEventListener", "resize", js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+        width, height = DOM.GetScreenSize()
+        gameView.SetSize(width, height)
+        mapView.SetSize(width*80/100, height*60/100)
+        return nil
+    }))
 
     // creating game state
     log.Println("Creating game state")
