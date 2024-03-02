@@ -2,6 +2,7 @@ package render
 
 import (
     "go-webgl/browser"
+    "go-webgl/canvas"
     "image/color"
 )
 
@@ -22,6 +23,8 @@ type Renderer interface {
     DrawLine(x1, y1, x2, y2, width float64)
     DrawRect(x1, y1, x2, y2 float64)
 
-    Clear() // Clear the canvas
+    GetCanvas() canvas.Canvas
+
+    Clear() // Clear the Canvas
     Flush() // set image as rendered
 }

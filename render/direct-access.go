@@ -10,15 +10,13 @@ import (
 )
 
 type DirectCtx struct {
-    // canvas properties
-    canvas canvas.Canvas
+    // Canvas properties
+    Canvas canvas.Canvas
     ctx    js.Value
 
     // position properties
     width  int
     height int
-    x      int
-    y      int
 
     // RequestAnimationFrame
     done     chan struct{} // Used as part of 'run forever' in the render handler
@@ -27,7 +25,7 @@ type DirectCtx struct {
     timeStep float64  // Min Time delay between frames. - Calculated as   maxFPS/1000
 }
 
-func NewDirectCtx(width, height, x, y int) *DirectCtx {
+func NewDirectCtx(width, height int) *DirectCtx {
     c, err := canvas.New2d(true)
 
     if err != nil {
@@ -37,34 +35,33 @@ func NewDirectCtx(width, height, x, y int) *DirectCtx {
     ctx := c.Js().Call("getContext", "2d")
 
     return &DirectCtx{
-        canvas: c,
+        Canvas: c,
         ctx:    ctx,
         window: js.Global(),
         done:   make(chan struct{}),
 
         width:  width,
         height: height,
-        x:      x,
-        y:      y,
     }
 }
 
 // implement Renderer interface
 var _ Renderer = (*DirectCtx)(nil)
 
+func (r *DirectCtx) GetCanvas() canvas.Canvas {
+    return r.Canvas
+}
+
 func (r *DirectCtx) Init(dom browser.DOM) {
-    r.canvas.Create(r.width, r.height)
-    r.canvas.SetPosition(r.x, r.y)
-    r.canvas.SetZIndex(1)
-    r.canvas.SetSize(r.width, r.height)
+    r.Canvas.SetSize(r.width, r.height)
 }
 
 func (r *DirectCtx) SetSize(width int, height int) {
-    r.canvas.SetSize(width, height)
+    r.Canvas.SetSize(width, height)
 }
 
 func (r *DirectCtx) Size() (int, int) {
-    return r.canvas.Size()
+    return r.Canvas.Size()
 }
 
 func (r *DirectCtx) SetFPS(maxFPS int) {

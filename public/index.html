@@ -6,22 +6,27 @@
     <link rel="stylesheet" type="text/css" href="style.css" />
     <title>Ray Casting</title>
   </head>
+
   <body>
-    <script src="build/wasm_exec.js"></script>
+    <div id="main"></div>
+    <div id="load-script">
+      <script src="build/wasm_exec.js"></script>
+      <script>
+        if (!WebAssembly.instantiateStreaming) {
+          WebAssembly.instantiateStreaming = async (resp, importObject) => {
+            const source = await (await resp).arrayBuffer();
+            return await WebAssembly.instantiate(source, importObject);
+          };
+        }
 
-    <script>
-      if (!WebAssembly.instantiateStreaming) {
-        WebAssembly.instantiateStreaming = async (resp, importObject) => {
-          const source = await (await resp).arrayBuffer();
-          return await WebAssembly.instantiate(source, importObject);
-        };
-      }
-
-      const go = new Go();
-      let mod, inst;
-      WebAssembly.instantiateStreaming(fetch("build/engine.wasm"), go.importObject).then(
-        (result) => go.run(result.instance)
-      );
-    </script>
+        const go = new Go();
+        let mod, inst;
+        WebAssembly.instantiateStreaming(fetch("build/engine.wasm"), go.importObject).then(
+                (result) => go.run(result.instance)
+        );
+      </script>
+    </div>
   </body>
+
+
 </html>

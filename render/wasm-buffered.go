@@ -38,6 +38,10 @@ type WasmBuffered struct {
     copybuff js.Value
 }
 
+func (r *WasmBuffered) GetCanvas() canvas.Canvas {
+    return r.canvas
+}
+
 func NewWasmBuffered(width, height, x, y int) *WasmBuffered {
     c, err := canvas.New2d(true)
 
@@ -184,7 +188,7 @@ func (r *WasmBuffered) initFrameUpdate(renderingFn RenderFn) {
 
 // Does the actually copy over of the image data for the 'render' call.
 func (r *WasmBuffered) imgCopy() {
-    // TODO:  This currently does multiple data copies.   go image drawCtx -> JS Uint8Array,   Then JS Uint8Array -> ImageData,  then ImageData into the canvas.
+    // TODO:  This currently does multiple data copies.   go image drawCtx -> JS Uint8Array,   Then JS Uint8Array -> ImageData,  then ImageData into the Canvas.
     // Would like to eliminate at least one of them, however currently CopyBytesToJS only supports Uint8Array  rather than the Uint8ClampedArray of ImageData.
 
     js.CopyBytesToJS(r.copybuff, r.image.Pix)

@@ -12,9 +12,5 @@ type Canvas interface {
     SetSize(width, height int)
     Size() (int, int)
 
-    SetPosition(x, y int)
-    Position() (int, int)
-
-    SetZIndex(z int)
-    ZIndex() int
+    SetCssProperty(property, value string)
 }

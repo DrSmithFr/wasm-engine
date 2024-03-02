@@ -16,12 +16,19 @@ type Canvas2d struct {
     // canvas properties
     canvas *js.Value
 
-    // position properties
+    // size properties
     width  int
     height int
-    x      int
-    y      int
-    zIndex int
+
+    // position properties
+    top    *int
+    left   *int
+    bottom *int
+    right  *int
+    zIndex *int
+
+    // extra css properties
+    css map[string]string
 }
 
 func New2d(create bool) (*Canvas2d, error) {
@@ -30,7 +37,7 @@ func New2d(create bool) (*Canvas2d, error) {
 
     c.window = js.Global()
     c.doc = c.window.Get("document")
-    c.body = c.doc.Get("body")
+    c.body = c.doc.Call("getElementById", "main")
 
     // If create, make a canvas that fills the windows
     if create {
@@ -39,6 +46,8 @@ func New2d(create bool) (*Canvas2d, error) {
             c.window.Get("innerHeight").Int(),
         )
     }
+
+    c.css = make(map[string]string)
 
     return &c, nil
 }
@@ -57,6 +66,7 @@ func (c *Canvas2d) Create(width int, height int) {
 
     canvas.Set("height", height)
     canvas.Set("width", width)
+
     c.body.Call("appendChild", canvas)
 
     c.Bind(&canvas, width, height)
@@ -85,27 +95,45 @@ func (c *Canvas2d) Js() *js.Value {
     return c.canvas
 }
 
-func (c *Canvas2d) SetPosition(x, y int) {
-    c.x = x
-    c.y = y
-
-    c.updateCanvasStyle()
-}
-
-func (c *Canvas2d) Position() (int, int) {
-    return c.x, c.y
-}
-
 func (c *Canvas2d) SetZIndex(z int) {
-    c.zIndex = z
-    c.updateCanvasStyle()
+    c.zIndex = &z
 }
 
-func (c *Canvas2d) ZIndex() int {
-    return c.zIndex
+func (c *Canvas2d) SetTop(x int) {
+    c.top = &x
+    c.UpdateCanvasStyle()
 }
 
-func (c *Canvas2d) updateCanvasStyle() {
-    style := fmt.Sprintf("position: absolute; left: %dpx; top: %dpx; z-index: %d;", c.x, c.y, c.zIndex)
+func (c *Canvas2d) SetLeft(x int) {
+    c.left = &x
+    c.UpdateCanvasStyle()
+}
+
+func (c *Canvas2d) SetBottom(x int) {
+    c.bottom = &x
+    c.UpdateCanvasStyle()
+}
+
+func (c *Canvas2d) SetRight(x int) {
+    c.right = &x
+    c.UpdateCanvasStyle()
+}
+
+func (c *Canvas2d) SetCssProperty(property, value string) {
+    old := c.css[property]
+
+    if old != value {
+        c.css[property] = value
+        c.UpdateCanvasStyle()
+    }
+}
+
+func (c *Canvas2d) UpdateCanvasStyle() {
+    style := "position: absolute;"
+
+    for property, value := range c.css {
+        style += fmt.Sprintf("%s: %s;", property, value)
+    }
+
     c.canvas.Set("style", style)
 }

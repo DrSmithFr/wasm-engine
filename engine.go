@@ -1,6 +1,7 @@
 package main
 
 import (
+    "fmt"
     "go-webgl/browser"
     "go-webgl/controller"
     "go-webgl/game"
@@ -25,13 +26,23 @@ func main() {
     width, height = DOM.GetScreenSize()
     log.Println("Screen size is", width, "x", height)
 
-    engine := render.NewDirectCtx(width, height, 0, 0)
+    gameView := render.NewDirectCtx(width, height)
+    minimapView := render.NewDirectCtx(200, 200)
+
+    // setting up the minimap position
+    minimapView.Canvas.SetCssProperty("position", "absolute")
+    minimapView.Canvas.SetCssProperty("top", "30px")
+    minimapView.Canvas.SetCssProperty("right", "30px")
+    minimapView.Canvas.SetCssProperty("border", "5px solid #666")
+    minimapView.Canvas.SetCssProperty("border-radius", "50%")
+    minimapView.Canvas.SetCssProperty("background", "#25252575")
 
     controls = controller.NewKeyboardOnly()
 
     // setting up everything
     log.Println("Binding engine and controls to DOM elements and events")
-    engine.Init(DOM)
+    gameView.Init(DOM)
+    minimapView.Init(DOM)
     controls.Init(DOM)
 
     // creating game state
@@ -56,7 +67,24 @@ func main() {
 
     // start the game loop
     log.Println("Starting the game loop")
-    engine.Start(30, GameLoop)
+
+    // Abusing the requestAnimationFrame to handle moves
+    gameView.Start(120, handleMove)
+
+    // Rendering the game
+    gameView.Start(30, GameLoop)
+
+    // Rendering the minimap
+    minimapView.Start(25, func(r render.Renderer) bool {
+        render.RenderMinimap(r, *gs.GetPlayer(), *gs.GetLevel())
+
+        // Make the minimap canvas rotate with the player direction
+        // just for fun and to show how to manipulate the canvas
+        rotate := fmt.Sprintf("rotate(-%ddeg)", gs.GetPlayer().Position.Angle+90)
+        r.GetCanvas().SetCssProperty("transform", rotate)
+
+        return true
+    })
 
     // avoid WebAssembly to exit the program
     log.Println("WASM is keep running forever, waiting for a signal to stop it.")
@@ -84,14 +112,6 @@ func GameLoop(r render.Renderer) bool {
         render.RenderSector(r, *gs.GetPlayer(), sector)
     }
 
-    // render minimap
-    log.Println("Rendering minimap")
-    render.RenderMinimap(r, *gs.GetPlayer(), *gs.GetLevel())
-
-    // handle move
-    log.Println("Handling moves")
-    handleMove()
-
     // flush the buffer
     log.Println("Flushing frame to rendering canvas")
     r.Flush()
@@ -103,7 +123,9 @@ func GameLoop(r render.Renderer) bool {
     return true
 }
 
-func handleMove() {
+func handleMove(r render.Renderer) bool {
+    log.Println("Handling moves")
+
     actions := controls.GetState()
     player := gs.GetPlayer()
 
@@ -129,4 +151,6 @@ func handleMove() {
     } else if actions.TurnLeft {
         player.TurnLeft()
     }
+
+    return true
 }
