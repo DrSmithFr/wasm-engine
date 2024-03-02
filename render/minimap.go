@@ -11,33 +11,33 @@ func RenderMinimap(r Renderer, p game.Player, m game.Map) {
 
     screenW, screenH := r.Size()
 
+    halfW := float64(screenW / 2)
+    halfH := float64(screenH / 2)
+
     // render player position
     r.DrawCircle(
-        float64(screenW/2),
-        float64(screenH/2),
+        halfW,
+        halfH,
         5,
     )
 
     // draw a line in the direction the player is facing
-    dx, dy := p.Position.GetDelta()
-    r.DrawLine(
-        float64(screenW/2),
-        float64(screenH/2),
-        dx*game.MovementMomentum+float64(screenW/2),
-        dy*game.MovementMomentum+float64(screenH/2),
-        1,
-    )
+    const drawLineLength = 20
+    r.DrawLine(halfW, halfH, halfW, halfH-drawLineLength, 1)
 
     // render sectors
     for _, s := range m.Sectors {
-        for _, wall := range s.Walls {
-            x1, x2, y1, y2, _, _ := wall.RelativePosition(p)
+        for _, w := range s.Walls {
+            x1, y1, _ := TransformPointToPlayer(p, w.Points[0])
+            x2, y2, _ := TransformPointToPlayer(p, w.Points[1])
+
+            tx1, tz1, tx2, tz2 := RotateAroundPlayer(p, x1, y1, x2, y2)
 
             r.DrawLine(
-                x1+float64(screenW/2),
-                y1+float64(screenH/2),
-                x2+float64(screenW/2),
-                y2+float64(screenH/2),
+                halfW-tx1,
+                halfH-tz1,
+                halfW-tx2,
+                halfH-tz2,
                 1,
             )
         }

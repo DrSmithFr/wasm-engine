@@ -11,7 +11,7 @@ func FixAngle(alpha int) int {
         return alpha + 360
     }
 
-    if alpha >= 360 {
+    if alpha > 359 {
         return alpha - 360
     }
 
@@ -19,5 +19,5 @@ func FixAngle(alpha int) int {
 }
 
 func DegToRad(alpha int) float64 {
-    return float64(alpha) * (math.Pi / 180.)
+    return float64(alpha) * math.Pi / 180.
 }
