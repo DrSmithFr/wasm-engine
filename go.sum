@@ -1,3 +1,11 @@
+github.com/DrSmithFr/go-console v0.0.0-20230717101459-b4b93436c58b h1:dLU7Mdg2JHYTQ18vrpAc1KkIIroAIlUdVHLxk1fKui8=
+github.com/DrSmithFr/go-console v0.0.0-20230717101459-b4b93436c58b/go.mod h1:5x/X74DheJJ9M5loG5aEZIWMciC3q0ohxo1jdqqj25s=
+github.com/DrSmithFr/go-console v0.0.0-20240213203601-0efc7b6b93db h1:tDg0Ouv1dmJd2iqvVTZfbpr/GhFHVfNEF7C9hezCaxI=
+github.com/DrSmithFr/go-console v0.0.0-20240213203601-0efc7b6b93db/go.mod h1:5x/X74DheJJ9M5loG5aEZIWMciC3q0ohxo1jdqqj25s=
+github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkpeCY=
+github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
+github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nosvA=
+github.com/fsnotify/fsnotify v1.7.0/go.mod h1:40Bi/Hjc2AVfZrqy+aj+yEI+/bRxZnMJyTJwOpGvigM=
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 h1:DACJavvAHhabrF08vX0COfcOBJRhZ8lUbR+ZWIs0Y5g=
 github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0/go.mod h1:E/TSTwGwJL78qG/PmXZO1EjYhfJinVAhrmmHX6Z8B9k=
 github.com/llgcode/draw2d v0.0.0-20231212091825-f55e0c776b44 h1:1ad70i0s40IpMtRm2ST+Nvr03X7mlHWtdALYkFNrlxk=
@@ -5,3 +13,7 @@ github.com/llgcode/draw2d v0.0.0-20231212091825-f55e0c776b44/go.mod h1:muweRyJCZ
 github.com/llgcode/ps v0.0.0-20210114104736-f4b0c5d1e02e h1:ZAvbj5hI/G/EbAYAcj4yCXUNiFKefEhH0qfImDDD0/8=
 golang.org/x/image v0.14.0 h1:tNgSxAFe3jC4uYqvZdTr84SZoM1KfwdC9SKIFrLjFn4=
 golang.org/x/image v0.14.0/go.mod h1:HUYqC05R2ZcZ3ejNQsIHQDQiwWM4JBqmm6MKANTp4LE=
+golang.org/x/sys v0.4.0 h1:Zr2JFtRQNX3BCZ8YtxRE9hNJYC8J6I1MVbMg6owUp18=
+golang.org/x/sys v0.4.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.5.0 h1:MUK/U/4lj1t1oPg0HfuXDN/Z1wv31ZJ/YcPiGccS4DU=
+golang.org/x/sys v0.5.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
