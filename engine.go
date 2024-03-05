@@ -27,9 +27,15 @@ func main() {
     log.Println("Screen size is", width, "x", height)
 
     // creating render in order to render the game
-    gameView := render.NewDirectCtx(width, height)
+    gameView := render.NewDirectCtx(608, 480)
     minimapView := render.NewDirectCtx(200, 200)
     mapView := render.NewDirectCtx(width*80/100, height*60/100)
+
+    // setting up the game position
+    gameView.Canvas.SetCssProperty("position", "absolute")
+    gameView.Canvas.SetCssProperty("top", "50%")
+    gameView.Canvas.SetCssProperty("left", "50%")
+    gameView.Canvas.SetCssProperty("translate", "-50% -50%")
 
     // setting up the map position
     mapView.Canvas.SetCssProperty("position", "absolute")
@@ -71,14 +77,41 @@ func main() {
 
     // load level
     level := game.Map{
-        Spawn:      game.Point3D{50, 50, 0},
+        Spawn:      game.Point3D{90, 90, 0},
         SpawnAngle: 0,
         Sectors: []game.Sector{{
-            Walls: []game.Wall{{
-                Points:  [2]game.Point3D{{70, 20, 0}, {70, 70, 0}},
-                Ceiling: 10,
-                Floor:   0,
-            }},
+            Walls: []game.Wall{
+                {
+                    Points:  [2]game.Point3D{{40, 40, 0}, {120, 40, 0}},
+                    Color:   color.RGBA{255, 0, 0, 255},
+                    Ceiling: 10,
+                    Floor:   0,
+                },
+                {
+                    Points:  [2]game.Point3D{{120, 40, 0}, {160, 90, 0}},
+                    Color:   color.RGBA{0, 255, 0, 255},
+                    Ceiling: 10,
+                    Floor:   0,
+                },
+                {
+                    Points:  [2]game.Point3D{{160, 90, 0}, {120, 140, 0}},
+                    Color:   color.RGBA{0, 255, 255, 255},
+                    Ceiling: 10,
+                    Floor:   0,
+                },
+                {
+                    Points:  [2]game.Point3D{{120, 140, 0}, {40, 120, 0}},
+                    Color:   color.RGBA{255, 0, 255, 255},
+                    Ceiling: 10,
+                    Floor:   0,
+                },
+                {
+                    Points:  [2]game.Point3D{{40, 120, 0}, {40, 40, 0}},
+                    Color:   color.RGBA{255, 50, 255, 255},
+                    Ceiling: 10,
+                    Floor:   0,
+                },
+            },
         }},
     }
 
@@ -115,9 +148,13 @@ func main() {
 
         // Make the minimap canvas rotate with the player direction
         // just for fun and to show how to manipulate the canvas
-        if false {
+        if controls.GetState().LockMap {
             rotate := fmt.Sprintf("rotate(%ddeg)", gs.GetPlayer().Position.Angle+180)
             r.GetCanvas().SetCssProperty("transform", rotate)
+            r.GetCanvas().SetCssProperty("border-color", "red !important")
+        } else {
+            r.GetCanvas().SetCssProperty("transform", "rotate(0deg)")
+            r.GetCanvas().SetCssProperty("border-color", "#666 !important")
         }
 
         return true

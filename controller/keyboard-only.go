@@ -75,6 +75,8 @@ func (k *KeyboardOnly) keydownEvent(event js.Value) {
         k.move.Action = true
     case "KeyM":
         k.move.ShowMap = !k.move.ShowMap
+    case "Comma":
+        k.move.LockMap = !k.move.LockMap
     }
 }
 

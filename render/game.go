@@ -24,7 +24,7 @@ func RenderWall(r Renderer, p game.Player, w game.Wall) {
     // draw the wall
     if z1 > 0 || z2 > 0 {
         x1, z1, x2, z2 = ClipWallCoordinates(r, x1, z1, x2, z2)
-        DrawWall(r, x1, z1, x2, z2)
+        DrawWall(r, w, x1, z1, x2, z2)
     }
 }
 
@@ -98,19 +98,20 @@ func CrossProduct(x1, y1, x2, y2 float64) float64 {
     return x1*y2 - y1*x2
 }
 
-func DrawWall(r Renderer, tx1, tz1, tx2, tz2 float64) {
+func DrawWall(r Renderer, w game.Wall, tx1, tz1, tx2, tz2 float64) {
+    const fieldOfView = 60
     screenW, screenH := r.Size()
 
     halfW := float64(screenW / 2)
     halfH := float64(screenH / 2)
 
     // perspective projection top of the wall
-    x1 := -tx1 * 16 / tz1
+    x1 := -tx1 * fieldOfView / tz1
     y1a := -halfW / tz1
     y1b := halfW / tz1
 
     // perspective projection bottom of the wall
-    x2 := -tx2 * 16 / tz2
+    x2 := -tx2 * fieldOfView / tz2
     y2a := -halfW / tz2
     y2b := halfW / tz2
 
@@ -139,7 +140,7 @@ func DrawWall(r Renderer, tx1, tz1, tx2, tz2 float64) {
         r.DrawLine(halfW+x, 0, halfW+x, halfH+ya, 1)
 
         // draw wall
-        r.SetColor(color.RGBA{255, 255, 0, 100})
+        r.SetColor(w.Color)
         r.DrawLine(halfW+x, halfH+ya, halfW+x, halfH+yb, 1)
 
         // draw floor

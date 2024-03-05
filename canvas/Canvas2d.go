@@ -37,7 +37,7 @@ func New2d(create bool) (*Canvas2d, error) {
 
     c.window = js.Global()
     c.doc = c.window.Get("document")
-    c.body = c.doc.Call("getElementById", "main")
+    c.body = c.doc.Call("getElementById", "rendering-box")
 
     // If create, make a canvas that fills the windows
     if create {

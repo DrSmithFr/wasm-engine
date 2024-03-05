@@ -11,6 +11,7 @@ type ActionState struct {
     TurnRight bool
 
     ShowMap bool
+    LockMap bool
     Action  bool
 }
 

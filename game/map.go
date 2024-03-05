@@ -1,5 +1,7 @@
 package game
 
+import "image/color"
+
 type Collision int
 
 const (
@@ -20,6 +22,7 @@ type Sector struct {
 
 type Wall struct {
     Points  [2]Point3D
+    Color   color.RGBA
     Floor   float64
     Ceiling float64
     Portal  *Sector
