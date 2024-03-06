@@ -18,7 +18,7 @@ func main() {
         Description: "Start the server",
         Scripts: []*go_console.Script{
             {
-                Name:        "start:dev",
+                Name:        "server:start",
                 Description: "Start the web server.",
                 Options: []go_console.Option{
                     {
@@ -37,6 +37,32 @@ func main() {
                     },
                 },
                 Runner: startDevServer,
+            },
+            {
+                Name:        "build:watch",
+                Description: "Watch for file changes and rebuild the wasm binary.",
+                Runner: func(cmd *go_console.Script) go_console.ExitCode {
+                    buildWasm(cmd)
+                    lastBuild := time.Now()
+
+                    signal := make(chan bool)
+                    go WatchAndBuild(cmd, signal)
+
+                    // build on chan signal
+                    go func() {
+                        for {
+                            <-signal
+                            if time.Since(lastBuild) > 100*time.Millisecond {
+                                buildWasm(cmd)
+                                lastBuild = time.Now()
+                            }
+                        }
+                    }()
+
+                    // Block main goroutine forever.
+                    <-make(chan struct{})
+                    return go_console.ExitSuccess
+                },
             },
         },
     }

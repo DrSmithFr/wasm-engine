@@ -40,5 +40,7 @@ Also using html5 video element for cinematic and audio element for sound effects
 
     run `cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" build/`
 
-5. Run `go run server.go` to start the server.
+5. Run `go run main.go server:start` to start the server.
 6. Open `http://localhost:8080` in your browser.
+
+Or run `go run main.go build:watch` to rebuild on changes. And start your own server on `./public`.
