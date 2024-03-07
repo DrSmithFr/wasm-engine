@@ -42,6 +42,9 @@ func main() {
                 Name:        "build:watch",
                 Description: "Watch for file changes and rebuild the wasm binary.",
                 Runner: func(cmd *go_console.Script) go_console.ExitCode {
+                    cmd.PrintTitle("3D Engine Builder")
+
+                    cmd.PrintText("First to ensure the wasm binary up to date...")
                     buildWasm(cmd)
                     lastBuild := time.Now()
 

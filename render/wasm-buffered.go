@@ -5,7 +5,7 @@ import (
     "github.com/llgcode/draw2d"
     "github.com/llgcode/draw2d/draw2dimg"
     "go-webgl/browser"
-    "go-webgl/canvas"
+    canvas2 "go-webgl/browser/canvas"
     "image"
     "image/color"
     "math"
@@ -14,7 +14,7 @@ import (
 
 type WasmBuffered struct {
     // canvas properties
-    canvas  canvas.Canvas
+    canvas  canvas2.Canvas
     ctx     js.Value
     imgData js.Value
 
@@ -38,12 +38,12 @@ type WasmBuffered struct {
     copybuff js.Value
 }
 
-func (r *WasmBuffered) GetCanvas() canvas.Canvas {
+func (r *WasmBuffered) GetCanvas() canvas2.Canvas {
     return r.canvas
 }
 
 func NewWasmBuffered(width, height, x, y int) *WasmBuffered {
-    c, err := canvas.New2d(true)
+    c, err := canvas2.New2d(true)
 
     if err != nil {
         panic(err)
@@ -65,7 +65,7 @@ func NewWasmBuffered(width, height, x, y int) *WasmBuffered {
 var _ Renderer = (*WasmBuffered)(nil)
 
 func (r *WasmBuffered) Init(dom browser.DOM) {
-    c, err := canvas.New2d(false)
+    c, err := canvas2.New2d(false)
 
     if err != nil {
         panic(err)

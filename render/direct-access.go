@@ -3,7 +3,7 @@ package render
 import (
     "fmt"
     "go-webgl/browser"
-    "go-webgl/canvas"
+    canvas2 "go-webgl/browser/canvas"
     "image/color"
     "math"
     "syscall/js"
@@ -11,7 +11,7 @@ import (
 
 type DirectCtx struct {
     // Canvas properties
-    Canvas canvas.Canvas
+    Canvas canvas2.Canvas
     ctx    js.Value
 
     // position properties
@@ -26,7 +26,7 @@ type DirectCtx struct {
 }
 
 func NewDirectCtx(width, height int) *DirectCtx {
-    c, err := canvas.New2d(true)
+    c, err := canvas2.New2d(true)
 
     if err != nil {
         panic(err)
@@ -49,7 +49,7 @@ func NewDirectCtx(width, height int) *DirectCtx {
 // implement Renderer interface
 var _ Renderer = (*DirectCtx)(nil)
 
-func (r *DirectCtx) GetCanvas() canvas.Canvas {
+func (r *DirectCtx) GetCanvas() canvas2.Canvas {
     return r.Canvas
 }
 

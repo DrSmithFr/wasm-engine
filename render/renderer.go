@@ -2,7 +2,7 @@ package render
 
 import (
     "go-webgl/browser"
-    "go-webgl/canvas"
+    "go-webgl/browser/canvas"
     "image/color"
 )
 
