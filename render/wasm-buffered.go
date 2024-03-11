@@ -64,7 +64,7 @@ func NewWasmBuffered(width, height, x, y int) *WasmBuffered {
 // implement Renderer interface
 var _ Renderer = (*WasmBuffered)(nil)
 
-func (r *WasmBuffered) Init(dom browser.DOM) {
+func (r *WasmBuffered) Init(dom browser.Document) {
     c, err := canvas2.New2d(false)
 
     if err != nil {

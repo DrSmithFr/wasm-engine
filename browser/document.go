@@ -1,42 +1,36 @@
 package browser
 
 import (
-    "fmt"
-    "runtime"
     "syscall/js"
 )
 
-func LoadDOM() DOM {
-    // loading default DOM data
+func Load() Document {
+    // loading default Document data
     window := js.Global()
     document := window.Get("document")
     body := document.Get("body")
 
-    // loading DOM size data
+    // loading Document size data
     size := Size{
         Height: window.Get("innerHeight").Float(),
         Width:  window.Get("innerWidth").Float(),
     }
 
-    // returning DOM
-    dom := DOM{
+    // returning Document
+    dom := Document{
         Window:   window,
         Document: document,
         Body:     body,
         Size:     size,
     }
 
-    dom.Log(fmt.Sprintf("number of thread: %d", runtime.NumCPU()))
-
     return dom
 }
 
-type DOM struct {
+type Document struct {
     Window   js.Value
     Document js.Value
     Body     js.Value
-    Canvas   js.Value
-    Ball     js.Value
     Size     Size
 }
 
@@ -45,11 +39,11 @@ type Size struct {
     Height float64
 }
 
-func (dom *DOM) Log(args ...interface{}) {
+func (dom *Document) Log(args ...interface{}) {
     dom.Window.Get("console").Call("log", args...)
 }
 
-func (dom *DOM) GetScreenSize() (int, int) {
+func (dom *Document) GetScreenSize() (int, int) {
     w := js.Global().Get("innerWidth").Int()
     h := js.Global().Get("innerHeight").Int()
     return w, h

@@ -1,6 +1,8 @@
 package controller
 
-import "go-webgl/browser"
+import (
+    "go-webgl/browser"
+)
 
 type ActionState struct {
     Up        bool
@@ -16,6 +18,6 @@ type ActionState struct {
 }
 
 type Interface interface {
-    Init(dom browser.DOM)
+    Init(dom browser.Document)
     GetState() ActionState
 }

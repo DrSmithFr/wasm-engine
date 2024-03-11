@@ -9,7 +9,7 @@ import (
 type RenderFn func(r Renderer) bool
 
 type Renderer interface {
-    Init(dom browser.DOM)
+    Init(dom browser.Document)
 
     SetSize(width, height int)
     Size() (int, int)

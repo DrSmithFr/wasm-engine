@@ -3,6 +3,7 @@ package main
 import (
     "fmt"
     "go-webgl/browser"
+    "go-webgl/browser/video"
     "go-webgl/controller"
     "go-webgl/game"
     "go-webgl/render"
@@ -11,7 +12,7 @@ import (
     "syscall/js"
 )
 
-var DOM browser.DOM
+var DOM browser.Document
 var controls controller.Interface
 var gs *game.GameState
 
@@ -21,8 +22,8 @@ var height int
 func main() {
     log.Println("Starting the game engine")
 
-    // loading DOM to memory
-    DOM = browser.LoadDOM()
+    // loading Document to memory
+    DOM = browser.Load()
     width, height = DOM.GetScreenSize()
     log.Println("Screen size is", width, "x", height)
 
@@ -57,7 +58,7 @@ func main() {
     controls = controller.NewKeyboardOnly()
 
     // setting up everything
-    log.Println("Binding engine and controls to DOM elements and events")
+    log.Println("Binding engine and controls to Document elements and events")
     gameView.Init(DOM)
     mapView.Init(DOM)
     minimapView.Init(DOM)
@@ -169,6 +170,7 @@ func main() {
 }
 
 func GameLoop(r render.Renderer) bool {
+    // clear the buffer
     r.Clear()
 
     // render background
@@ -184,6 +186,10 @@ func GameLoop(r render.Renderer) bool {
 
     // flush the buffer
     r.Flush()
+
+    // testing cinematic
+    player := video.BindById("cinematic")
+    player.Play()
 
     return true
 }

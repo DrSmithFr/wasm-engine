@@ -27,7 +27,7 @@ func NewKeyboardOnly() *KeyboardOnly {
 // implement Interface interface
 var _ Interface = (*KeyboardOnly)(nil)
 
-func (k *KeyboardOnly) Init(dom browser.DOM) {
+func (k *KeyboardOnly) Init(dom browser.Document) {
     k.bindEvents(dom)
 }
 
@@ -37,7 +37,7 @@ func (k *KeyboardOnly) GetState() ActionState {
 
 // internal methods
 
-func (k *KeyboardOnly) bindEvents(dom browser.DOM) {
+func (k *KeyboardOnly) bindEvents(dom browser.Document) {
     // let's handle key Down
     var keydownEventHandler = js.FuncOf(func(this js.Value, args []js.Value) interface{} {
         k.keydownEvent(args[0])

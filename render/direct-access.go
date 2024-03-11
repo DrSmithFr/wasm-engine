@@ -53,7 +53,7 @@ func (r *DirectCtx) GetCanvas() canvas2.Canvas {
     return r.Canvas
 }
 
-func (r *DirectCtx) Init(dom browser.DOM) {
+func (r *DirectCtx) Init(dom browser.Document) {
     r.Canvas.SetSize(r.width, r.height)
 }
 
