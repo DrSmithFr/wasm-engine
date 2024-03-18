@@ -38,7 +38,7 @@ Also using html5 video element for cinematic and audio element for sound effects
 3. Run `go mod tidy` to download the dependencies.
 4. Copy the `wasm_exec.js` file from the Go installation directory to the `public/build`. 
 
-    run `cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" build/`
+    run `cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" public/build/`
 
 5. Run `go run main.go server:start` to start the server.
 6. Open `http://localhost:8080` in your browser.
