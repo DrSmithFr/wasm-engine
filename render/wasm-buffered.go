@@ -70,7 +70,6 @@ func (r *WasmBuffered) Init(window *element.Window) {
 func (r *WasmBuffered) SetSize(width int, height int) {
 	r.canvas.SetSize(width, height)
 
-	// Setup the 2D Drawing context
 	r.imgData = r.ctx.CreateImageData(width, height) // Note Width, then Height
 	r.image = image.NewRGBA(image.Rect(0, 0, width, height))
 	r.copybuff = js.Global().Get("Uint8Array").New(len(r.image.Pix)) // Static JS drawCtx for copying data out to JS. Defined once and re-used to save on un-needed allocations
@@ -98,6 +97,8 @@ func (r *WasmBuffered) Stop() {
 }
 
 func (r *WasmBuffered) Clear() {
+	r.SetColor(color.RGBA{0, 0, 0, 0})
+	r.DrawRect(0, 0, float64(r.width), float64(r.height))
 	r.gctx.Clear()
 }
 
@@ -117,7 +118,7 @@ func (r *WasmBuffered) DrawCircle(x, y, width float64) {
 	r.gctx.SetLineWidth(1)
 	r.gctx.ArcTo(x, y, radius, radius, 0, -math.Pi*2)
 	r.gctx.Fill()
-	r.gctx.Close()
+	r.gctx.FillStroke()
 }
 
 func (r *WasmBuffered) DrawLine(x1, y1, x2, y2, width float64) {
@@ -125,7 +126,7 @@ func (r *WasmBuffered) DrawLine(x1, y1, x2, y2, width float64) {
 	r.gctx.SetLineWidth(width)
 	r.gctx.MoveTo(x1, y1)
 	r.gctx.LineTo(x2, y2)
-	r.gctx.Stroke()
+	r.gctx.FillStroke()
 }
 
 func (r *WasmBuffered) DrawRect(x1, y1, x2, y2 float64) {

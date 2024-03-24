@@ -82,10 +82,11 @@ func main() {
 
 	// creating render in order to render the game
 	gameView := render.NewDirectCtx(gameCanvas)
-	mapView := render.NewWasmBuffered(mapCanvas)
+	mapView := render.NewDirectCtx(mapCanvas)
 	minimapView := render.NewDirectCtx(minimapCanvas)
 
 	// fix render size
+	width, height = window.InnerSize()
 	gameView.SetSize(width, height)
 	mapView.SetSize(width*80/100, height*60/100)
 	minimapView.SetSize(200, 200)
