@@ -8,32 +8,20 @@
 </head>
 
 <body>
-    <div id="cinematic-box">
-        <video id="cinematic" src="assets/intro.mp4" width="320" height="240">
-            <source src="assets/intro.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-    </div>
-    <div id="rendering-box"></div>
-    <div id="sound-box" style="opacity: 0"></div>
-    <div id="load-script">
-        <script src="build/wasm_exec.js"></script>
-        <script>
-          if (!WebAssembly.instantiateStreaming) {
-            WebAssembly.instantiateStreaming = async (resp, importObject) => {
-              const source = await (await resp).arrayBuffer();
-              return await WebAssembly.instantiate(source, importObject);
-            };
-          }
+<script src="build/wasm_exec.js"></script>
+<script>
+    if (!WebAssembly.instantiateStreaming) {
+        WebAssembly.instantiateStreaming = async (resp, importObject) => {
+            const source = await (await resp).arrayBuffer();
+            return await WebAssembly.instantiate(source, importObject);
+        };
+    }
 
-          const go = new Go();
-          let mod, inst;
-          WebAssembly.instantiateStreaming(fetch("build/engine.wasm"), go.importObject).then(
-            (result) => go.run(result.instance)
-          );
-        </script>
-    </div>
+    const go = new Go();
+    let mod, inst;
+    WebAssembly.instantiateStreaming(fetch("build/engine.wasm"), go.importObject).then(
+        (result) => go.run(result.instance)
+    );
+</script>
 </body>
-
-
 </html>

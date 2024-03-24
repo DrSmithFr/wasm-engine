@@ -1,2 +1,3 @@
+.idea
 public/build/*
-public/build/.gitkeep
+!public/build/.gitkeep
