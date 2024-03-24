@@ -195,11 +195,10 @@ func (c *Context2D) SetStrokeStyle(hex string) {
 	c.ctx.Set("strokeStyle", hex)
 }
 
-func (c *Context2D) CreateImageData(width int, height int) *ImageData {
-	raw := c.ctx.Call("createImageData", width, height)
-	return NewImageData(raw, width*height)
+func (c *Context2D) CreateImageData(width int, height int) js.Value {
+	return c.ctx.Call("createImageData", width, height)
 }
 
-func (c *Context2D) PutImageData(img *ImageData, x, y int) {
-	c.ctx.Call("putImageData", img.Js(), x, y)
+func (c *Context2D) PutImageData(img js.Value, x, y int) {
+	c.ctx.Call("putImageData", img, x, y)
 }

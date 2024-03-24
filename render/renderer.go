@@ -24,6 +24,6 @@ type Renderer interface {
 
 	GetCanvas() *element.CanvasElement
 
-	Clear() // Clear the Canvas
+	Clear() // Clear the canvas
 	Flush() // set image as rendered
 }

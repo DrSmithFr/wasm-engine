@@ -14,9 +14,12 @@ import (
 
 type WasmBuffered struct {
 	// canvas properties
-	canvas  *element.CanvasElement
-	ctx     *ctx.Context2D
-	imgData *ctx.ImageData
+	canvas *element.CanvasElement
+	ctx    *ctx.Context2D
+
+	// Buffer for copying the image data
+	imgData  js.Value
+	copybuff js.Value
 
 	// position properties
 	width  int
@@ -39,16 +42,13 @@ func (r *WasmBuffered) GetCanvas() *element.CanvasElement {
 	return r.canvas
 }
 
-func NewWasmBuffered(c *element.CanvasElement, width, height int) *WasmBuffered {
+func NewWasmBuffered(c *element.CanvasElement) *WasmBuffered {
 	return &WasmBuffered{
 		canvas: c,
 		ctx:    c.GetContext2d(),
 
 		window: js.Global(),
 		done:   make(chan struct{}),
-
-		width:  width,
-		height: height,
 	}
 }
 
@@ -56,15 +56,25 @@ func NewWasmBuffered(c *element.CanvasElement, width, height int) *WasmBuffered 
 var _ Renderer = (*WasmBuffered)(nil)
 
 func (r *WasmBuffered) Init(window *element.Window) {
+	if r.width == 0 {
+		r.width = r.canvas.Js().Get("width").Int()
+	}
+
+	if r.height == 0 {
+		r.height = r.canvas.Js().Get("height").Int()
+	}
+
 	r.SetSize(r.width, r.height)
 }
 
 func (r *WasmBuffered) SetSize(width int, height int) {
-	// Setup the 2D Drawing context
 	r.canvas.SetSize(width, height)
-	r.imgData = r.ctx.CreateImageData(r.width, r.height) // Note Width, then Height
 
+	// Setup the 2D Drawing context
+	r.imgData = r.ctx.CreateImageData(width, height) // Note Width, then Height
 	r.image = image.NewRGBA(image.Rect(0, 0, width, height))
+	r.copybuff = js.Global().Get("Uint8Array").New(len(r.image.Pix)) // Static JS drawCtx for copying data out to JS. Defined once and re-used to save on un-needed allocations
+
 	r.gctx = draw2dimg.NewGraphicContext(r.image)
 }
 
@@ -162,6 +172,7 @@ func (r *WasmBuffered) initFrameUpdate(renderingFn RenderFn) {
 
 // Does the actually copy over of the image data for the 'render' call.
 func (r *WasmBuffered) imgCopy() {
-	r.imgData.SetData(r.image)
+	js.CopyBytesToJS(r.copybuff, r.image.Pix)
+	r.imgData.Get("data").Call("set", r.copybuff)
 	r.ctx.PutImageData(r.imgData, 0, 0)
 }

@@ -54,8 +54,13 @@ func (d *CanvasElement) Size() (int, int) {
 }
 
 func (d *CanvasElement) SetSize(width, height int) {
-	d.SetWidth(width)
-	d.SetHeight(height)
+	if width != 0 {
+		d.SetWidth(width)
+	}
+
+	if height != 0 {
+		d.SetHeight(height)
+	}
 }
 
 // getContext Returns a drawing context on the canvas, or null if the context identifier is not supported.

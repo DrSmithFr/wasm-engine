@@ -12,14 +12,14 @@ type ImageData struct {
 	copybuff js.Value
 }
 
-func NewImageData(data js.Value, length int) *ImageData {
+func NewImageData(data js.Value, width, height int) *ImageData {
 	if data.IsNull() || data.IsUndefined() {
 		return nil
 	}
 
 	return &ImageData{
 		data:     data,
-		copybuff: helper.NewUint8Array(length),
+		copybuff: helper.NewUint8Array(width * height * 4),
 	}
 }
 
@@ -36,9 +36,8 @@ func (i *ImageData) Js() js.Value {
 
 // SetData Sets the data for the ImageData object
 func (i *ImageData) SetData(img *image.RGBA) {
-	// TODO:  This currently does multiple data copies.   go image drawCtx -> JS Uint8Array,   Then JS Uint8Array -> ImageData,  then ImageData into the Canvas.
+	// TODO:  This currently does multiple data copies.   go image drawCtx -> JS Uint8Array,   Then JS Uint8Array -> ImageData,  then ImageData into the canvas.
 	// Would like to eliminate at least one of them, however currently CopyBytesToJS only supports Uint8Array  rather than the Uint8ClampedArray of ImageData
 
-	js.CopyBytesToJS(i.copybuff, img.Pix)
 	i.data.Get("data").Call("set", i.copybuff)
 }

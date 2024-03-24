@@ -21,6 +21,14 @@ func main() {
 	window := dom.Window()
 	document := window.Document()
 
+	document.Body().Style().
+		SetProperty("background", "#000", false).
+		SetProperty("margin", "0", false).
+		SetProperty("padding", "0", false).
+		SetProperty("overflow", "hidden", false).
+		SetProperty("width", "100dvw", false).
+		SetProperty("height", "100dvh", false)
+
 	// loading Document to memory
 	width, height = window.InnerSize()
 	log.Println("Screen size is", width, "x", height)
@@ -34,15 +42,19 @@ func main() {
 	gameCanvas.
 		HTMLElement().
 		Style().
+		SetProperty("background", "#333", false).
 		SetProperty("position", "absolute", false).
 		SetProperty("top", "50%", false).
 		SetProperty("left", "50%", false).
-		SetProperty("translate", "-50% -50%", false)
+		SetProperty("translate", "-50% -50%", false).
+		SetProperty("aspect-ratio", "4 / 3", false).
+		SetProperty("height", "100dvh", false)
 
 	// setting up the map position
 	mapCanvas.
 		HTMLElement().
 		Style().
+		SetProperty("background", "#333", false).
 		SetProperty("position", "absolute", false).
 		SetProperty("top", "50%", false).
 		SetProperty("left", "50%", false).
@@ -55,6 +67,7 @@ func main() {
 	minimapCanvas.
 		HTMLElement().
 		Style().
+		SetProperty("background", "#333", false).
 		SetProperty("position", "absolute", false).
 		SetProperty("top", "30px", false).
 		SetProperty("right", "30px", false).
@@ -68,9 +81,14 @@ func main() {
 	document.Body().Element().AppendChild(minimapCanvas)
 
 	// creating render in order to render the game
-	gameView := render.NewDirectCtx(gameCanvas, 608, 480)
-	mapView := render.NewWasmBuffered(mapCanvas, width*80/100, height*60/100)
-	minimapView := render.NewDirectCtx(minimapCanvas, 200, 200)
+	gameView := render.NewDirectCtx(gameCanvas)
+	mapView := render.NewWasmBuffered(mapCanvas)
+	minimapView := render.NewDirectCtx(minimapCanvas)
+
+	// fix render size
+	gameView.SetSize(width, height)
+	mapView.SetSize(width*80/100, height*60/100)
+	minimapView.SetSize(200, 200)
 
 	controls = controller.NewKeyboardOnly()
 
