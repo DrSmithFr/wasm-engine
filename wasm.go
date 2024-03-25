@@ -81,7 +81,7 @@ func main() {
 	document.Body().Element().AppendChild(minimapCanvas)
 
 	// creating render in order to render the game
-	gameView := render.NewDirectCtx(gameCanvas)
+	gameView := render.NewWasmBuffered(gameCanvas)
 	mapView := render.NewDirectCtx(mapCanvas)
 	minimapView := render.NewDirectCtx(minimapCanvas)
 
