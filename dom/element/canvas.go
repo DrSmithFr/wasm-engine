@@ -2,34 +2,28 @@ package element
 
 import (
 	"go-webgl/dom/element/ctx"
-	"go-webgl/dom/wasm"
 	"syscall/js"
 )
 
 // for reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
 
 type CanvasElement struct {
-	element *HTMLElement
+	*HTMLElement
 }
 
 func NewCanvasElement(element *HTMLElement) *CanvasElement {
-	return &CanvasElement{element: element}
-}
+	if element == nil {
+		return nil
+	}
 
-// enforce interface compliance
-var _ wasm.WASM = (*CanvasElement)(nil)
-
-func (d *CanvasElement) Js() js.Value {
-	return d.element.Js()
+	return &CanvasElement{
+		HTMLElement: element,
+	}
 }
 
 //
 // CanvasElement methods
 //
-
-func (d *CanvasElement) HTMLElement() *HTMLElement {
-	return d.element
-}
 
 // Width A long representing the width of the canvas in coordinate space units.
 func (d *CanvasElement) Width() int {

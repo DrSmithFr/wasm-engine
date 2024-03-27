@@ -11,7 +11,7 @@ import (
 type HTMLDocument Document
 
 type Document struct {
-	raw js.Value
+	*wasm.Entity
 }
 
 // CurrentDocument enforce document Singleton
@@ -22,20 +22,21 @@ func LoadDocument() *Document {
 		return CurrentDocument
 	}
 
-	CurrentDocument = &Document{raw: js.Global().Get("document")}
+	CurrentDocument = &Document{
+		Entity: wasm.New(js.Global().Get("document")),
+	}
 
 	return CurrentDocument
 }
 
-// enforce interface compliance
-var _ wasm.WASM = (*Document)(nil)
+func NewDocument(raw js.Value) *Document {
+	if raw.IsNull() || raw.IsUndefined() {
+		return nil
+	}
 
-func (d *Document) Bind(e js.Value) {
-	d.raw = e
-}
-
-func (d *Document) Js() js.Value {
-	return d.raw
+	return &Document{
+		Entity: wasm.New(raw),
+	}
 }
 
 //
@@ -44,13 +45,13 @@ func (d *Document) Js() js.Value {
 
 // ActiveElement Returns the HTMLElement that currently has focus.
 func (d *Document) ActiveElement() js.Value {
-	return d.raw.Get("activeElement")
+	return d.Js().Get("activeElement")
 }
 
 // AdoptedStyleSheets Add an array of constructed stylesheets to be used by the document.
 // These stylesheets may also be shared with shadow DOM subtrees of the same document.
 func (d *Document) AdoptedStyleSheets() []string {
-	rawStyles := d.raw.Get("adoptedStyleSheets")
+	rawStyles := d.Js().Get("adoptedStyleSheets")
 	styles := make([]string, rawStyles.Length())
 
 	for i := 0; i < rawStyles.Length(); i++ {
@@ -61,32 +62,32 @@ func (d *Document) AdoptedStyleSheets() []string {
 }
 
 func (d *Document) SetAdoptedStyleSheets(styles []string) {
-	d.raw.Set("adoptedStyleSheets", styles)
+	d.Js().Set("adoptedStyleSheets", styles)
 }
 
 // Title Returns the title of the current document.
 func (d *Document) Title() string {
-	return d.raw.Get("title").String()
+	return d.Js().Get("title").String()
 }
 
 func (d *Document) SetTitle(title string) {
-	d.raw.Set("title", title)
+	d.Js().Set("title", title)
 }
 
 // URL Returns the URL of the current document.
 func (d *Document) URL() string {
-	return d.raw.Get("URL").String()
+	return d.Js().Get("URL").String()
 }
 
 // Body Returns the <body> or <frameset> node of the current document, or null if no such element exists.
 func (d *Document) Body() *HTMLElement {
-	rawBody := d.raw.Get("body")
+	rawBody := d.Js().Get("body")
 	return NewHTMLElement(rawBody)
 }
 
 // Head Returns the <head> element of the current document.
 func (d *Document) Head() *HTMLElement {
-	rawHead := d.raw.Get("head")
+	rawHead := d.Js().Get("head")
 	return NewHTMLElement(rawHead)
 }
 
@@ -96,7 +97,7 @@ func (d *Document) Head() *HTMLElement {
 
 // CreateElement Creates the HTML element specified by tagName.
 func (d *Document) CreateElement(tagName list.Type) *HTMLElement {
-	rawElement := d.raw.Call("createElement", string(tagName))
+	rawElement := d.Js().Call("createElement", string(tagName))
 	return NewHTMLElement(rawElement)
 }
 
@@ -107,24 +108,24 @@ func (d *Document) CreateCanvasElement() *CanvasElement {
 
 // GetElementById Returns a reference to the element by its ID.
 func (d *Document) GetElementById(id string) *HTMLElement {
-	rawElement := d.raw.Call("getElementById", id)
+	rawElement := d.Js().Call("getElementById", id)
 	return NewHTMLElement(rawElement)
 }
 
 // GetElementsByClassName Returns an array-like object of all child elements which have all of the given class names.
 func (d *Document) GetElementsByClassName(classNames string) []*HTMLElement {
-	rawElements := d.raw.Call("getElementsByClassName", classNames)
+	rawElements := d.Js().Call("getElementsByClassName", classNames)
 	return NewHTMLElementList(rawElements)
 }
 
 // GetElementsByTagName Returns an HTMLCollection of elements with the given tag name.
 func (d *Document) GetElementsByTagName(tagName string) []*HTMLElement {
-	rawElements := d.raw.Call("getElementsByTagName", tagName)
+	rawElements := d.Js().Call("getElementsByTagName", tagName)
 	return NewHTMLElementList(rawElements)
 }
 
 // GetElementsByTagNameNS Returns an HTMLCollection of elements with the given tag name in the namespace.
 func (d *Document) GetElementsByTagNameNS(namespace, tagName string) []*HTMLElement {
-	rawElements := d.raw.Call("getElementsByTagNameNS", namespace, tagName)
+	rawElements := d.Js().Call("getElementsByTagNameNS", namespace, tagName)
 	return NewHTMLElementList(rawElements)
 }

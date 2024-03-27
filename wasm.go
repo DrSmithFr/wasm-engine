@@ -21,7 +21,9 @@ func main() {
 	window := dom.Window()
 	document := window.Document()
 
-	document.Body().Style().
+	document.
+		Body().
+		Style().
 		SetProperty("background", "#000", false).
 		SetProperty("margin", "0", false).
 		SetProperty("padding", "0", false).
@@ -40,7 +42,6 @@ func main() {
 
 	// setting up the game position
 	gameCanvas.
-		HTMLElement().
 		Style().
 		SetProperty("background", "#333", false).
 		SetProperty("position", "absolute", false).
@@ -52,7 +53,6 @@ func main() {
 
 	// setting up the map position
 	mapCanvas.
-		HTMLElement().
 		Style().
 		SetProperty("background", "#333", false).
 		SetProperty("position", "absolute", false).
@@ -65,7 +65,6 @@ func main() {
 
 	// setting up the minimap position
 	minimapCanvas.
-		HTMLElement().
 		Style().
 		SetProperty("background", "#333", false).
 		SetProperty("position", "absolute", false).
@@ -76,13 +75,13 @@ func main() {
 		SetProperty("background", "#25252575", false)
 
 	// appending canvas to the document
-	document.Body().Element().AppendChild(gameCanvas)
-	document.Body().Element().AppendChild(mapCanvas)
-	document.Body().Element().AppendChild(minimapCanvas)
+	document.Body().AppendChild(gameCanvas.Node)
+	document.Body().AppendChild(mapCanvas.Node)
+	document.Body().AppendChild(minimapCanvas.Node)
 
 	// creating render in order to render the game
-	gameView := render.NewWasmBuffered(gameCanvas)
-	mapView := render.NewDirectCtx(mapCanvas)
+	gameView := render.NewDirectCtx(gameCanvas)
+	mapView := render.NewWasmBuffered(mapCanvas)
 	minimapView := render.NewDirectCtx(minimapCanvas)
 
 	// fix render size
@@ -170,11 +169,11 @@ func main() {
 		actions := controls.GetState()
 
 		if actions.ShowMap {
-			r.GetCanvas().HTMLElement().Style().SetProperty("display", "block", false)
+			r.GetCanvas().Style().SetProperty("display", "block", false)
 			render.RenderMap(r, *gs.GetPlayer(), *gs.GetLevel())
 			return true
 		} else {
-			r.GetCanvas().HTMLElement().Style().SetProperty("display", "none", false)
+			r.GetCanvas().Style().SetProperty("display", "none", false)
 		}
 
 		return false
@@ -189,13 +188,11 @@ func main() {
 		if controls.GetState().LockMap {
 			rotate := fmt.Sprintf("rotate(%ddeg)", gs.GetPlayer().Position.Angle+180)
 			r.GetCanvas().
-				HTMLElement().
 				Style().
 				SetProperty("transform", rotate, false).
 				SetProperty("border-color", "red", true)
 		} else {
 			r.GetCanvas().
-				HTMLElement().
 				Style().
 				SetProperty("transform", "rotate(0deg)", false).
 				SetProperty("border-color", "#666", true)

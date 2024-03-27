@@ -1,8 +1,11 @@
-package EventTarget
+package element
 
-import "syscall/js"
+import (
+	"go-webgl/dom/wasm"
+	"syscall/js"
+)
 
-type EventTarget interface {
+type EventTargetI interface {
 	// AddEventListener Registers an event handler of a specific event type on the EventTarget.
 	// The event target may be an HTMLElement in a document, the Document itself, a Window, or any other object that supports events
 	// (such as XMLHttpRequest).
@@ -19,4 +22,30 @@ type EventTarget interface {
 	// If an event listener is removed from an EventTarget while it is processing an event, it will not be triggered by the current actions.
 	// Event listeners can never be invoked after being removed.
 	RemoveEventListener(eventType string, listener js.Func)
+}
+
+type EventTarget struct {
+	*wasm.Entity
+}
+
+func NewEventTarget(raw js.Value) *EventTarget {
+	if raw.IsNull() || raw.IsUndefined() {
+		return nil
+	}
+
+	return &EventTarget{
+		Entity: wasm.New(raw),
+	}
+}
+
+func (e *EventTarget) AddEventListener(eventType string, listener js.Func) {
+	e.Js().Call("addEventListener", eventType, listener)
+}
+
+func (e *EventTarget) DispatchEvent(event js.Value) {
+	e.Js().Call("dispatchEvent", event)
+}
+
+func (e *EventTarget) RemoveEventListener(eventType string, listener js.Func) {
+	e.Js().Call("removeEventListener", eventType, listener)
 }

@@ -8,7 +8,7 @@ import (
 // for reference: https://developer.mozilla.org/en-US/docs/Web/API/Window
 
 type Window struct {
-	raw      js.Value
+	*wasm.Entity
 	document *Document
 }
 
@@ -20,21 +20,12 @@ func LoadWindow() *Window {
 		return CurrentWindow
 	}
 
-	CurrentWindow = &Window{raw: js.Global()}
+	CurrentWindow = &Window{
+		Entity: wasm.New(js.Global()),
+	}
 	CurrentWindow.document = LoadDocument()
 
 	return CurrentWindow
-}
-
-// enforce interface compliance
-var _ wasm.WASM = (*Window)(nil)
-
-func (d *Window) Bind(e js.Value) {
-	d.raw = e
-}
-
-func (d *Window) Js() js.Value {
-	return d.raw
 }
 
 //
@@ -43,7 +34,7 @@ func (d *Window) Js() js.Value {
 
 // DevicePixelRatio Returns the ratio of the resolution in physical pixels to the resolution in CSS pixels for the current display device.
 func (d *Window) DevicePixelRatio() float64 {
-	return d.raw.Get("devicePixelRatio").Float()
+	return d.Js().Get("devicePixelRatio").Float()
 }
 
 // Document Returns the Document object that represents the document in the specified window.
@@ -53,12 +44,12 @@ func (d *Window) Document() *Document {
 
 // InnerWidth Returns the width of the content area of the browser window including, if rendered, the vertical scrollbar.
 func (d *Window) InnerWidth() int {
-	return d.raw.Get("innerWidth").Int()
+	return d.Js().Get("innerWidth").Int()
 }
 
 // InnerHeight Returns the height of the content area of the browser window including, if rendered, the horizontal scrollbar.
 func (d *Window) InnerHeight() int {
-	return d.raw.Get("innerHeight").Int()
+	return d.Js().Get("innerHeight").Int()
 }
 
 func (d *Window) InnerSize() (int, int) {
@@ -67,12 +58,12 @@ func (d *Window) InnerSize() (int, int) {
 
 // OuterWidth Returns the width of the outside of the browser window.
 func (d *Window) OuterWidth() int {
-	return d.raw.Get("outerWidth").Int()
+	return d.Js().Get("outerWidth").Int()
 }
 
 // OuterHeight Returns the height of the outside of the browser window.
 func (d *Window) OuterHeight() int {
-	return d.raw.Get("outerHeight").Int()
+	return d.Js().Get("outerHeight").Int()
 }
 
 func (d *Window) OuterSize() (int, int) {
@@ -81,12 +72,12 @@ func (d *Window) OuterSize() (int, int) {
 
 // PageXOffset Returns the number of pixels that the document has already been scrolled horizontally.
 func (d *Window) PageXOffset() int {
-	return d.raw.Get("pageXOffset").Int()
+	return d.Js().Get("pageXOffset").Int()
 }
 
 // PageYOffset Returns the number of pixels that the document has already been scrolled vertically.
 func (d *Window) PageYOffset() int {
-	return d.raw.Get("pageYOffset").Int()
+	return d.Js().Get("pageYOffset").Int()
 }
 
 func (d *Window) PageOffset() (int, int) {

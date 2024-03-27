@@ -14,7 +14,7 @@ func newStylePropertyMap(raw js.Value) *StylePropertyMap {
 }
 
 // enforce interface compliance
-var _ wasm.WASM = (*StylePropertyMap)(nil)
+var _ wasm.Wasm = (*StylePropertyMap)(nil)
 
 func (m StylePropertyMap) Js() js.Value {
 	return m.raw

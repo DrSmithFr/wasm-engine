@@ -1,18 +1,25 @@
 package element
 
 import (
-	"go-webgl/dom/wasm"
 	"syscall/js"
 )
 
 // for reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
 
 type HTMLElement struct {
-	element *Element
+	*Element
+	css *CSSStyleDeclaration
 }
 
 func NewHTMLElement(raw js.Value) *HTMLElement {
-	return &HTMLElement{element: newElement(raw)}
+	if raw.IsNull() || raw.IsUndefined() {
+		return nil
+	}
+
+	return &HTMLElement{
+		Element: newElement(raw),
+		css:     newCSSStyleDeclaration(raw.Get("style")),
+	}
 }
 
 func NewHTMLElementList(items js.Value) []*HTMLElement {
@@ -25,20 +32,9 @@ func NewHTMLElementList(items js.Value) []*HTMLElement {
 	return elements
 }
 
-// enforce interface compliance
-var _ wasm.WASM = (*HTMLElement)(nil)
-
-func (d *HTMLElement) Js() js.Value {
-	return d.element.Js()
-}
-
 //
 // HTMLElement methods
 //
-
-func (d *HTMLElement) Element() *Element {
-	return d.element
-}
 
 // AccessKey A DOMString representing the access key assigned to the element.
 func (d *HTMLElement) AccessKey() string {

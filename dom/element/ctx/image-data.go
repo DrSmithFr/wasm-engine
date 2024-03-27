@@ -24,7 +24,7 @@ func NewImageData(data js.Value, width, height int) *ImageData {
 }
 
 // enforce interface compliance
-var _ wasm.WASM = (*ImageData)(nil)
+var _ wasm.Wasm = (*ImageData)(nil)
 
 func (i *ImageData) Js() js.Value {
 	return i.data
