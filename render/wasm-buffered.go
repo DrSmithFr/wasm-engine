@@ -164,7 +164,7 @@ func (r *WasmBuffered) initFrameUpdate(renderingFn RenderFn) {
 			return nil
 		})
 		defer renderFrame.Release()
-		js.Global().Call("requestAnimationFrame", renderFrame)
+		r.reqID = js.Global().Call("requestAnimationFrame", renderFrame)
 		<-r.done
 	}()
 }

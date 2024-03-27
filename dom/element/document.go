@@ -2,6 +2,7 @@ package element
 
 import (
 	"go-webgl/dom/element/list"
+	"go-webgl/dom/promise"
 	"go-webgl/dom/wasm"
 	"log"
 	"syscall/js"
@@ -539,13 +540,13 @@ func (d *Document) ElementsFromPoint(x, y int) []*Element {
 }
 
 // ExitFullscreen Exits full-screen mode.
-func (d *Document) ExitFullscreen() *Promise {
-	return NewPromise(d.Js().Call("exitFullscreen"))
+func (d *Document) ExitFullscreen() *promise.Promise {
+	return promise.New(d.Js().Call("exitFullscreen"))
 }
 
 // ExitPictureInPicture Exits Picture-in-Picture mode.
-func (d *Document) ExitPictureInPicture() *Promise {
-	return NewPromise(d.Js().Call("exitPictureInPicture"))
+func (d *Document) ExitPictureInPicture() *promise.Promise {
+	return promise.New(d.Js().Call("exitPictureInPicture"))
 }
 
 // ExitPointerLock Exits pointer lock.
@@ -590,8 +591,8 @@ func (d *Document) GetSelection() *Selection {
 }
 
 // HasStorageAccess Returns a Promise that resolves with a boolean indicating whether the document has access to the storage area.
-func (d *Document) HasStorageAccess() *Promise {
-	return NewPromise(d.Js().Call("hasStorageAccess"))
+func (d *Document) HasStorageAccess() *promise.Promise {
+	return promise.New(d.Js().Call("hasStorageAccess"))
 }
 
 // ImportNode Imports a node from another document.
@@ -627,8 +628,8 @@ func (d *Document) ReplaceChildren(nodes ...*Node) {
 }
 
 // RequestStorageAccess Requests permission from the user for the page to access a storage quota.
-func (d *Document) RequestStorageAccess() *Promise {
-	return NewPromise(d.Js().Call("requestStorageAccess"))
+func (d *Document) RequestStorageAccess() *promise.Promise {
+	return promise.New(d.Js().Call("requestStorageAccess"))
 }
 
 // CreateExpression Creates a new XPathExpression.

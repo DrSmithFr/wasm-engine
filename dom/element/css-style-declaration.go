@@ -9,7 +9,7 @@ type CSSStyleDeclaration struct {
 	*wasm.Entity
 }
 
-func newCSSStyleDeclaration(raw js.Value) *CSSStyleDeclaration {
+func NewCSSStyleDeclaration(raw js.Value) *CSSStyleDeclaration {
 	if raw.IsNull() || raw.IsUndefined() {
 		return nil
 	}

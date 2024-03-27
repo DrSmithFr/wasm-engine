@@ -1,4 +1,4 @@
-package element
+package promise
 
 import (
 	"go-webgl/dom/wasm"
@@ -9,7 +9,7 @@ type Promise struct {
 	*wasm.Entity
 }
 
-func NewPromise(raw js.Value) *Promise {
+func New(raw js.Value) *Promise {
 	if raw.IsNull() || raw.IsUndefined() {
 		return nil
 	}

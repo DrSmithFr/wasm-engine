@@ -18,7 +18,7 @@ func NewHTMLElement(raw js.Value) *HTMLElement {
 
 	return &HTMLElement{
 		Element: NewElement(raw),
-		css:     newCSSStyleDeclaration(raw.Get("style")),
+		css:     NewCSSStyleDeclaration(raw.Get("style")),
 	}
 }
 
@@ -71,5 +71,5 @@ func (d *HTMLElement) SetContentEditable(value bool) {
 
 // Style A CSSStyleDeclaration object that represents the element's style attribute.
 func (d *HTMLElement) Style() *CSSStyleDeclaration {
-	return newCSSStyleDeclaration(d.Js().Get("style"))
+	return NewCSSStyleDeclaration(d.Js().Get("style"))
 }
