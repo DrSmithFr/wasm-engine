@@ -10,7 +10,7 @@ type Element struct {
 	*Node
 }
 
-func newElement(raw js.Value) *Element {
+func NewElement(raw js.Value) *Element {
 	if raw.IsNull() || raw.IsUndefined() {
 		return nil
 	}
@@ -18,6 +18,16 @@ func newElement(raw js.Value) *Element {
 	return &Element{
 		Node: NewNode(raw),
 	}
+}
+
+func NewElementList(items js.Value) []*Element {
+	elements := make([]*Element, items.Length())
+
+	for i := 0; i < items.Length(); i++ {
+		elements[i] = NewElement(items.Index(i))
+	}
+
+	return elements
 }
 
 //
@@ -41,7 +51,7 @@ func (d *Element) ChildElementCount() int {
 
 // Children Returns the child elements of this element.
 func (d *Element) Children() *Element {
-	return newElement(Children(d.Js()))
+	return NewElement(Children(d.Js()))
 }
 
 // ClassName A string representing the class of the element.
@@ -81,7 +91,7 @@ func (d *Element) ElementTiming() js.Value {
 
 // FirstElementChild Returns the first child element of this element.
 func (d *Element) FirstElementChild() *Element {
-	return newElement(FirstElementChild(d.Js()))
+	return NewElement(FirstElementChild(d.Js()))
 }
 
 // Id A string representing the id of the element.
@@ -104,12 +114,12 @@ func (d *Element) SetInnerHTML(html string) {
 
 // LastElementChild Returns the last child element of this element.
 func (d *Element) LastElementChild() *Element {
-	return newElement(LastElementChild(d.Js()))
+	return NewElement(LastElementChild(d.Js()))
 }
 
 // NextElementSibling Returns the element immediately following the specified one in its parent's children list, or null if the specified element is the last one in the list.
 func (d *Element) NextElementSibling() *Element {
-	return newElement(NextElementSibling(d.Js()))
+	return NewElement(NextElementSibling(d.Js()))
 }
 
 // LocalName A string representing the local part of the qualified name of the element.

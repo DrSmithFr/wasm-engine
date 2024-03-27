@@ -17,19 +17,9 @@ func NewHTMLElement(raw js.Value) *HTMLElement {
 	}
 
 	return &HTMLElement{
-		Element: newElement(raw),
+		Element: NewElement(raw),
 		css:     newCSSStyleDeclaration(raw.Get("style")),
 	}
-}
-
-func NewHTMLElementList(items js.Value) []*HTMLElement {
-	elements := make([]*HTMLElement, items.Length())
-
-	for i := 0; i < items.Length(); i++ {
-		elements[i] = NewHTMLElement(items.Index(i))
-	}
-
-	return elements
 }
 
 //

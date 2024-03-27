@@ -28,6 +28,16 @@ func LoadWindow() *Window {
 	return CurrentWindow
 }
 
+func NewWindow(raw js.Value) *Window {
+	if raw.IsNull() || raw.IsUndefined() {
+		return nil
+	}
+
+	return &Window{
+		Entity: wasm.New(raw),
+	}
+}
+
 //
 // Window methods
 //
