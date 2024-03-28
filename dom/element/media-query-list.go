@@ -4,6 +4,7 @@ import (
 	"syscall/js"
 )
 
+// MediaQueryList https://developer.mozilla.org/en-US/docs/Web/API/MediaQueryList
 type MediaQueryList struct {
 	*EventTarget
 }

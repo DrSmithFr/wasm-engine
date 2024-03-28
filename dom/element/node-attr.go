@@ -2,6 +2,7 @@ package element
 
 import "syscall/js"
 
+// Attr https://developer.mozilla.org/en-US/docs/Web/API/Attr
 type Attr struct {
 	*Node
 }

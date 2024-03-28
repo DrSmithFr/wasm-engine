@@ -2,6 +2,7 @@ package element
 
 import "syscall/js"
 
+// HTMLSlotElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLSlotElement
 type HTMLSlotElement struct {
 	*HTMLElement
 }

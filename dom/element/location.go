@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// Location https://developer.mozilla.org/en-US/docs/Web/API/Location
 type Location struct {
 	*wasm.Entity
 }

@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// Iterator https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Iteration_protocols
 type Iterator struct {
 	*wasm.Entity
 }

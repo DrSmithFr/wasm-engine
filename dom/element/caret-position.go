@@ -6,6 +6,7 @@ import (
 	"syscall/js"
 )
 
+// CaretPosition https://developer.mozilla.org/en-US/docs/Web/API/CaretPosition
 type CaretPosition struct {
 	*wasm.Entity
 }

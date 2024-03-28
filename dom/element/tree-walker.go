@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// TreeWalker https://developer.mozilla.org/en-US/docs/Web/API/TreeWalker
 type TreeWalker struct {
 	*wasm.Entity
 }

@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// Screen https://developer.mozilla.org/en-US/docs/Web/API/Screen
 type Screen struct {
 	*wasm.Entity
 }

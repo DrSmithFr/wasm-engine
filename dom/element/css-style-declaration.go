@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// CSSStyleDeclaration https://developer.mozilla.org/en-US/docs/Web/API/CSSStyleDeclaration
 type CSSStyleDeclaration struct {
 	*wasm.Entity
 }

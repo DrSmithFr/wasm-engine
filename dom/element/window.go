@@ -5,8 +5,7 @@ import (
 	"syscall/js"
 )
 
-// for reference: https://developer.mozilla.org/en-US/docs/Web/API/Window
-
+// Window https://developer.mozilla.org/en-US/docs/Web/API/Window
 type Window struct {
 	*EventTarget
 	document *Document

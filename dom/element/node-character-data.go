@@ -2,6 +2,7 @@ package element
 
 import "syscall/js"
 
+// CharacterData https://developer.mozilla.org/en-US/docs/Web/API/CharacterData
 type CharacterData struct {
 	*Node
 }

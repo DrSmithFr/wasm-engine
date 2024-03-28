@@ -4,8 +4,7 @@ import (
 	"syscall/js"
 )
 
-// for reference: https://developer.mozilla.org/en-US/docs/Web/API/Element
-
+// Element https://developer.mozilla.org/en-US/docs/Web/API/Element
 type Element struct {
 	*Node
 }
@@ -29,10 +28,6 @@ func NewElementList(items js.Value) []*Element {
 
 	return elements
 }
-
-//
-// HTMLElement methods
-//
 
 // AssignedSlot Returns a HTMLSlotElement representing the <slot> the node is inserted in.
 func (d *Element) AssignedSlot() js.Value {

@@ -9,27 +9,27 @@ import (
 	"time"
 )
 
-// for reference: https://developer.mozilla.org/en-US/docs/Web/API/Document
-
+// HTMLDocument https://developer.mozilla.org/en-US/docs/Web/API/HTMLDocument
 type HTMLDocument Document
 
+// Document https://developer.mozilla.org/en-US/docs/Web/API/Document
 type Document struct {
 	*wasm.Entity
 }
 
-// CurrentDocument enforce document Singleton
-var CurrentDocument *Document
+// currentDocument enforce document Singleton
+var currentDocument *Document
 
 func LoadDocument() *Document {
-	if CurrentDocument != nil {
-		return CurrentDocument
+	if currentDocument != nil {
+		return currentDocument
 	}
 
-	CurrentDocument = &Document{
+	currentDocument = &Document{
 		Entity: wasm.New(js.Global().Get("document")),
 	}
 
-	return CurrentDocument
+	return currentDocument
 }
 
 func NewDocument(raw js.Value) *Document {

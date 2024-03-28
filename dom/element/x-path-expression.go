@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// XPathExpression https://developer.mozilla.org/en-US/docs/Web/API/XPathExpression
 type XPathExpression struct {
 	*wasm.Entity
 }

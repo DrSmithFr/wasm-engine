@@ -4,8 +4,7 @@ import (
 	"syscall/js"
 )
 
-// for reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
-
+// HTMLElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
 type HTMLElement struct {
 	*Element
 	css *CSSStyleDeclaration
@@ -20,6 +19,16 @@ func NewHTMLElement(raw js.Value) *HTMLElement {
 		Element: NewElement(raw),
 		css:     NewCSSStyleDeclaration(raw.Get("style")),
 	}
+}
+
+func NewHTMLElementList(items js.Value) []*HTMLElement {
+	elements := make([]*HTMLElement, items.Length())
+
+	for i := 0; i < items.Length(); i++ {
+		elements[i] = NewHTMLElement(items.Index(i))
+	}
+
+	return elements
 }
 
 //

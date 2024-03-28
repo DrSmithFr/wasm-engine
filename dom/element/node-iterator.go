@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// NodeIterator https://developer.mozilla.org/en-US/docs/Web/API/NodeIterator
 type NodeIterator struct {
 	*wasm.Entity
 }

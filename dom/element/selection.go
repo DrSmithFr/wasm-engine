@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// Selection https://developer.mozilla.org/en-US/docs/Web/API/Selection
 type Selection struct {
 	*wasm.Entity
 }

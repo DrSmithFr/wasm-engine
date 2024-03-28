@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// Range https://developer.mozilla.org/en-US/docs/Web/API/Range
 type Range struct {
 	*wasm.Entity
 }

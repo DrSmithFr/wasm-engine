@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// DOMRectReadOnly https://developer.mozilla.org/en-US/docs/Web/API/DOMRectReadOnly
 type DOMRectReadOnly struct {
 	*wasm.Entity
 }

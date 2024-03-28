@@ -1,5 +1,8 @@
 package element
 
+// Node https://developer.mozilla.org/en-US/docs/Web/API/Node
+// NodeType https://developer.mozilla.org/en-US/docs/Web/API/Node/nodeType
+
 type NodeType int
 
 const (

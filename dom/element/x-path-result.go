@@ -5,6 +5,8 @@ import (
 	"syscall/js"
 )
 
+// XPathResult https://developer.mozilla.org/en-US/docs/Web/API/XPathResult
+
 type XPathResultType int
 
 const (

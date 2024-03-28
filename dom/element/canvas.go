@@ -5,8 +5,7 @@ import (
 	"syscall/js"
 )
 
-// for reference: https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
-
+// CanvasElement https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement
 type CanvasElement struct {
 	*HTMLElement
 }

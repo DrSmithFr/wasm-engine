@@ -1,28 +1,19 @@
 package element
 
 import (
-	"go-webgl/dom/wasm"
 	"syscall/js"
 )
 
+// StylePropertyMap https://developer.mozilla.org/en-US/docs/Web/API/StylePropertyMap
 type StylePropertyMap struct {
-	raw js.Value
+	*StylePropertyMapReadOnly
 }
 
 func newStylePropertyMap(raw js.Value) *StylePropertyMap {
-	return &StylePropertyMap{raw: raw}
+	return &StylePropertyMap{
+		StylePropertyMapReadOnly: newStylePropertyMapReadOnly(raw),
+	}
 }
-
-// enforce interface compliance
-var _ wasm.Wasm = (*StylePropertyMap)(nil)
-
-func (m StylePropertyMap) Js() js.Value {
-	return m.raw
-}
-
-//
-// StylePropertyMap methods
-//
 
 // Append Adds a property to the map, or updates it if it already exists.
 func (m StylePropertyMap) Append(name string, value string) {

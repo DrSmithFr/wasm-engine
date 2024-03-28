@@ -6,6 +6,7 @@ import (
 	"syscall/js"
 )
 
+// CacheStorage https://developer.mozilla.org/en-US/docs/Web/API/CacheStorage
 type CacheStorage struct {
 	*wasm.Entity
 }

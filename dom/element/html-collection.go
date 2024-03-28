@@ -5,18 +5,7 @@ import (
 	"syscall/js"
 )
 
-func NewHTMLElementList(items js.Value) []*HTMLElement {
-	elements := make([]*HTMLElement, items.Length())
-
-	for i := 0; i < items.Length(); i++ {
-		elements[i] = NewHTMLElement(items.Index(i))
-	}
-
-	return elements
-}
-
-///////////////////////
-
+// HTMLCollection https://developer.mozilla.org/en-US/docs/Web/API/HTMLCollection
 type HTMLCollection struct {
 	*wasm.Entity
 }

@@ -4,12 +4,7 @@ import (
 	"syscall/js"
 )
 
-// FromRect Creates a new DOMRect object with a given position and size.
-func FromRect(other *DOMRectReadOnly) *DOMRect {
-	elem := js.Global().Get("DOMRect").New(other.Js())
-	return NewDOMRect(elem)
-}
-
+// DOMRect https://developer.mozilla.org/en-US/docs/Web/API/DOMRect
 type DOMRect struct {
 	*DOMRectReadOnly
 }
@@ -22,6 +17,12 @@ func NewDOMRect(raw js.Value) *DOMRect {
 	return &DOMRect{
 		DOMRectReadOnly: NewDOMRectReadOnly(raw),
 	}
+}
+
+// FromRect Creates a new DOMRect object with a given position and size.
+func FromRect(other *DOMRectReadOnly) *DOMRect {
+	elem := js.Global().Get("DOMRect").New(other.Js())
+	return NewDOMRect(elem)
 }
 
 // SetX Sets the x-coordinate of the DOMRect.

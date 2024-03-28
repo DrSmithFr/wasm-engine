@@ -6,6 +6,8 @@ import (
 	"syscall/js"
 )
 
+// Response https://developer.mozilla.org/en-US/docs/Web/API/Response
+
 type ResponseStatus int
 
 const (

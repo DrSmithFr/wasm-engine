@@ -5,6 +5,7 @@ import (
 	"syscall/js"
 )
 
+// DOMStringList https://developer.mozilla.org/en-US/docs/Web/API/DOMStringList
 type DOMStringList struct {
 	*wasm.Entity
 }
